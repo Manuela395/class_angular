@@ -1,0 +1,38 @@
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #cccccc;
+  z-index: 1000;
+}
+
+.logo {
+  height: 95px;
+}
+
+.user-icon {
+  height: 90px;
+}
+
+.header-logos-icons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-logos {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+}

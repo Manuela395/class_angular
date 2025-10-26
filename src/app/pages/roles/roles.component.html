@@ -1,0 +1,65 @@
+<div class="roles-container">
+  <div class="header">
+    <h2>ROLES</h2>
+    <p>Configuración de roles</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="openModal()">+ Crear</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Filtrar..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Código</th>
+          <th>Fecha Creación</th>
+          <th>Fecha Actualización</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of filteredRoles">
+          <td>{{ role.name }}</td>
+          <td>{{ role.code }}</td>
+          <td>{{ role.createdAt | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ role.updatedAt | date: 'yyyy-MM-dd' }}</td>
+          <td class="actions-cell">
+            <button class="edit-btn" (click)="openModal(role)">Editar</button>
+            <button class="delete-btn" (click)="deleteRole(role.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de creación/edición -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{ editMode ? 'Editar Rol' : 'Crear Rol' }}</h3>
+
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="selectedRole.name" />
+
+      <label>Código</label>
+      <input type="text" [(ngModel)]="selectedRole.code" />
+
+      <div class="modal-actions">
+        <button class="save-btn" (click)="saveRole()">
+          {{ editMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

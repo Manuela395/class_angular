@@ -1,0 +1,70 @@
+<div class="devices-container">
+  <div class="header">
+    <h2>DISPOSITIVOS</h2>
+    <p>Configuración de dispositivos</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="openModal()">+ Crear</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Buscar por nombre o serie..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Número de Serie</th>
+          <th>Versión Firmware</th>
+          <th>Fecha Creación</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of filteredDevices">
+          <td>{{ d.name }}</td>
+          <td>{{ d.serial_number }}</td>
+          <td>{{ d.firmware_version }}</td>
+          <td>{{ d.createdAt | date: 'yyyy-MM-dd' }}</td>
+          <td class="actions-cell">
+            <button class="edit-btn" (click)="openModal(d)">Editar</button>
+            <button class="delete-btn" (click)="deleteDevice(d.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{ editMode ? 'Editar Dispositivo' : 'Crear Dispositivo' }}</h3>
+
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="selectedDevice.name" />
+
+      <label>Número de Serie</label>
+      <input type="text" [(ngModel)]="selectedDevice.serial_number" />
+
+      <label>Versión Firmware</label>
+      <input type="text" [(ngModel)]="selectedDevice.firmware_version" />
+
+      <div class="modal-actions">
+        <button class="save-btn" (click)="saveDevice()">
+          {{ editMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

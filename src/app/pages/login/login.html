@@ -1,0 +1,30 @@
+<div class="login">
+  <div class="left">
+    <img src="images/banner_logging.png" alt="clinic" />
+  </div>
+
+  <div class="right">
+    <div>
+      <img class="brand" src="images/logo_5.png" alt="logo" />
+    </div>
+
+    <h2>Inicia sesión</h2>
+    <p class="subtitle">Ingresa tus datos y empieza a disfrutar</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>Correo o Identificación</label>
+      <input type="text" formControlName="login" placeholder="daniela@clinicaecg.com" />
+
+      <label>Contraseña</label>
+      <input type="password" formControlName="password" placeholder="••••••••" />
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <a class="forgot" routerLink="/forgot">¿No recuerdas tu contraseña?</a>
+    </form>
+  </div>
+</div>

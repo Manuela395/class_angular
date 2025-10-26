@@ -1,0 +1,95 @@
+<div class="users-container">
+  <div class="header">
+    <h2>USUARIOS</h2>
+    <p>Configuración de usuarios</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="openModal()">+ Crear</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Buscar por nombre o identificación..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Identificación</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers">
+          <td>{{ user.name }} {{ user.last_name }}</td>
+          <td>{{ user.identification }}</td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role?.name }}</td>
+          <td>{{ user.is_active ? 'Activo' : 'Inactivo' }}</td>
+          <td class="actions-cell">
+            <button class="edit-btn" (click)="openModal(user)">Editar</button>
+            <button class="delete-btn" (click)="deleteUser(user.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de crear / editar usuario -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{ editMode ? 'Editar Usuario' : 'Crear Usuario' }}</h3>
+
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="selectedUser.name" />
+
+      <label>Apellido</label>
+      <input type="text" [(ngModel)]="selectedUser.last_name" />
+
+      <label>Identificación</label>
+      <input type="text" [(ngModel)]="selectedUser.identification" />
+
+      <label>Teléfono</label>
+      <input type="text" [(ngModel)]="selectedUser.phone" />
+
+      <label>Correo</label>
+      <input type="email" [(ngModel)]="selectedUser.email" />
+
+      <label>Género</label>
+      <select [(ngModel)]="selectedUser.gender">
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+      </select>
+
+      <label>Fecha de nacimiento</label>
+      <input type="date" [(ngModel)]="selectedUser.birthdate" />
+
+      <label>Rol</label>
+      <select [(ngModel)]="selectedUser.roles[0]">
+        <option *ngFor="let r of roles" [value]="r.code">{{ r.name }}</option>
+      </select>
+
+      <label *ngIf="!editMode">Contraseña</label>
+      <input *ngIf="!editMode" type="password" [(ngModel)]="selectedUser.password" />
+
+      <div class="modal-actions">
+        <button class="save-btn" (click)="saveUser()">
+          {{ editMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

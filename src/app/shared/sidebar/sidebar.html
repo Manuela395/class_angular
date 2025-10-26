@@ -1,0 +1,36 @@
+<aside class="sidebar">
+  <div class="title">MENÚ</div>
+
+  <nav class="nav">
+    <a routerLink="/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">admin_panel_settings</span><span class="txt">Roles</span>
+    </a>
+    <a routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">group</span><span class="txt">Usuarios</span>
+    </a>
+    <a
+      routerLink="/dispositivos"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="msr">sensors</span><span class="txt">Dispositivos</span>
+    </a>
+
+    <a routerLink="/citas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">event</span><span class="txt">Citas</span>
+    </a>
+    <a
+      routerLink="/consultas"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="msr">medical_information</span><span class="txt">Consultas</span>
+    </a>
+    <a routerLink="/sesiones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">monitor_heart</span><span class="txt">Sesiones</span>
+    </a>
+    <a routerLink="/lecturas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">show_chart</span><span class="txt">Lecturas</span>
+    </a>
+  </nav>
+</aside>

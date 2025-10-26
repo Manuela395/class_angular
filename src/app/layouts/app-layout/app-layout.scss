@@ -1,0 +1,15 @@
+$header-h: 100px;
+$side-w: 240px; /* <-- igual al sidebar */
+
+.shell {
+  display: grid;
+  grid-template-columns: $side-w 1fr;
+  height: calc(100dvh - $header-h);
+  margin-top: $header-h;
+}
+
+.content {
+  overflow: auto;
+  padding: 24px 28px;
+  background: #f7f9fb;
+}
