@@ -2,34 +2,30 @@
   <div class="title">MENÚ</div>
 
   <nav class="nav">
-    <a routerLink="/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <!-- Solo Admin puede ver Roles, Usuarios y Dispositivos -->
+    <a *ngIf="isAdmin()" routerLink="/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">admin_panel_settings</span><span class="txt">Roles</span>
     </a>
-    <a routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <a *ngIf="isAdmin()" routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">group</span><span class="txt">Usuarios</span>
     </a>
-    <a
-      routerLink="/dispositivos"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
+    <a *ngIf="isAdmin()" routerLink="/dispositivos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">sensors</span><span class="txt">Dispositivos</span>
     </a>
 
-    <a routerLink="/citas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <!-- Solo Admin Auxiliar puede ver Citas -->
+    <a *ngIf="isAdminAux()" routerLink="/citas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">event</span><span class="txt">Citas</span>
     </a>
-    <a
-      routerLink="/consultas"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
+
+    <!-- Solo Doctor puede ver Consultas, Sesiones y Lecturas -->
+    <a *ngIf="isDoctor()" routerLink="/consultas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">medical_information</span><span class="txt">Consultas</span>
     </a>
-    <a routerLink="/sesiones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <a *ngIf="isDoctor()" routerLink="/sesiones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">monitor_heart</span><span class="txt">Sesiones</span>
     </a>
-    <a routerLink="/lecturas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <a *ngIf="isDoctor()" routerLink="/lecturas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">show_chart</span><span class="txt">Lecturas</span>
     </a>
   </nav>
