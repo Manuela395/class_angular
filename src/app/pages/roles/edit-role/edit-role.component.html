@@ -1,0 +1,38 @@
+<div class="edit-role-container">
+  <div class="header">
+    <h2>ACTUALIZAR ROL</h2>
+    <p>Modifica la información del rol.</p>
+  </div>
+
+  <div class="form-card">
+    <!-- Fila para poner Nombre y Código lado a lado -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="role-name">Nombre</label>
+        <input
+          id="role-name"
+          type="text"
+          [(ngModel)]="role.name"
+          placeholder="Ej: Administrador"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role-code">Código</label>
+        <input
+          id="role-code"
+          type="text"
+          [(ngModel)]="role.code"
+          placeholder="Ej: ADMIN_ROLE"
+        />
+      </div>
+    </div>
+
+    <!-- Botones centrados -->
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="updateRole()">Actualizar Rol</button>
+      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

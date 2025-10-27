@@ -28,25 +28,62 @@ export const routes: Routes = [
         path: 'home',
         loadComponent: () => import('./pages/home/home').then((m) => m.Home),
       },
-         {
-           path: 'roles',
-           loadComponent: () =>
-             import('./pages/roles/roles.component')
-               .then(m => m.RolesComponent)
-         },
-  
-         {
-           path: 'usuarios',
-           loadComponent: () =>
-             import('./pages/users/users.component')
-               .then(m => m.UsersComponent)
-         },
-         {
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('./pages/roles/roles.component')
+            .then(m => m.RolesComponent)
+      },
+      {
+        path: 'roles/crear',
+        loadComponent: () =>
+          import('./pages/roles/create-role/create-role.component')
+            .then(m => m.CreateRoleComponent)
+      },
+      {
+        path: 'roles/actualizar/:id',
+        loadComponent: () =>
+          import('./pages/roles/edit-role/edit-role.component')
+            .then(m => m.EditRoleComponent)
+      },
+
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/users/users.component')
+            .then(m => m.UsersComponent)
+      },
+      {
+        path: 'usuarios/crear',
+        loadComponent: () =>
+          import('./pages/users/create-user/create-user.component')
+            .then(m => m.CreateUserComponent)
+      },
+      {
+        path: 'usuarios/actualizar/:id',
+        loadComponent: () =>
+          import('./pages/users/edit-user/edit-user.component')
+            .then(m => m.EditUserComponent)
+      },
+      
+      {
         path: 'dispositivos',
-           loadComponent: () =>
-             import('./pages/devices/devices.component')
-               .then(m => m.DevicesComponent)
-         },
+        loadComponent: () =>
+          import('./pages/devices/devices.component')
+            .then(m => m.DevicesComponent)
+      },
+      {
+        path: 'dispositivos/crear',
+        loadComponent: () =>
+          import('./pages/devices/create-device/create-device.component')
+            .then(m => m.CreateDeviceComponent)
+      },
+      {
+        path: 'dispositivos/actualizar/:id',
+        loadComponent: () =>
+          import('./pages/devices/edit-device/edit-device.component')
+            .then(m => m.EditDeviceComponent)
+      },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },

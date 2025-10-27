@@ -1,0 +1,38 @@
+<div class="create-role-container">
+  <div class="header">
+    <h2>CREAR NUEVO ROL</h2>
+    <p>Completa la información para el nuevo rol.</p>
+  </div>
+
+  <div class="form-card">
+    <!-- Fila para poner Nombre y Código lado a lado -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="role-name">Nombre</label>
+        <input
+          id="role-name"
+          type="text"
+          [(ngModel)]="newRole.name"
+          placeholder="Ej: Administrador"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role-code">Código</label>
+        <input
+          id="role-code"
+          type="text"
+          [(ngModel)]="newRole.code"
+          placeholder="Ej: ADMIN_ROLE"
+        />
+      </div>
+    </div>
+
+    <!-- Botones centrados -->
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="saveNewRole()">Guardar Rol</button>
+      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

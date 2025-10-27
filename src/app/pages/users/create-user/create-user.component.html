@@ -1,0 +1,109 @@
+<div class="create-user-container">
+  <div class="header">
+    <h2>CREAR NUEVO USUARIO</h2>
+    <p>Completa la información para el nuevo usuario.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="user-name">Nombre *</label>
+        <input
+          id="user-name"
+          type="text"
+          [(ngModel)]="newUser.name"
+          placeholder="Ej: Juan"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="user-lastname">Apellido</label>
+        <input
+          id="user-lastname"
+          type="text"
+          [(ngModel)]="newUser.last_name"
+          placeholder="Ej: Pérez"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="user-identification">Identificación *</label>
+        <input
+          id="user-identification"
+          type="text"
+          [(ngModel)]="newUser.identification"
+          placeholder="Ej: 1234567890"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="user-phone">Teléfono</label>
+        <input
+          id="user-phone"
+          type="text"
+          [(ngModel)]="newUser.phone"
+          placeholder="Ej: 3001234567"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="user-email">Correo Electrónico *</label>
+        <input
+          id="user-email"
+          type="email"
+          [(ngModel)]="newUser.email"
+          placeholder="Ej: usuario@ejemplo.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="user-birthdate">Fecha de Nacimiento</label>
+        <input
+          id="user-birthdate"
+          type="date"
+          [(ngModel)]="newUser.birthdate"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="user-gender">Género</label>
+        <select id="user-gender" [(ngModel)]="newUser.gender">
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+          <option value="O">Otro</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="user-role">Rol</label>
+        <select id="user-role" [(ngModel)]="newUser.roles[0]">
+          <option *ngFor="let r of roles" [value]="r.code">{{ r.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="user-password">Contraseña</label>
+        <input
+          id="user-password"
+          type="password"
+          [(ngModel)]="newUser.password"
+          placeholder="Min. 6 caracteres"
+        />
+      </div>
+    </div>
+
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="saveUser()">Guardar Usuario</button>
+      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

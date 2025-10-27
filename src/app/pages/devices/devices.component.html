@@ -5,7 +5,7 @@
   </div>
 
   <div class="actions">
-    <button class="create-btn" (click)="openModal()">+ Crear</button>
+    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
     <div class="filter">
       <input
         type="text"
@@ -35,7 +35,7 @@
           <td>{{ d.firmware_version }}</td>
           <td>{{ d.createdAt | date: 'yyyy-MM-dd' }}</td>
           <td class="actions-cell">
-            <button class="edit-btn" (click)="openModal(d)">Editar</button>
+            <button class="edit-btn" (click)="goToUpdate(d.id)">Actualizar</button>
             <button class="delete-btn" (click)="deleteDevice(d.id)">
               Eliminar
             </button>
@@ -43,28 +43,5 @@
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal" *ngIf="showModal">
-    <div class="modal-content">
-      <h3>{{ editMode ? 'Editar Dispositivo' : 'Crear Dispositivo' }}</h3>
-
-      <label>Nombre</label>
-      <input type="text" [(ngModel)]="selectedDevice.name" />
-
-      <label>Número de Serie</label>
-      <input type="text" [(ngModel)]="selectedDevice.serial_number" />
-
-      <label>Versión Firmware</label>
-      <input type="text" [(ngModel)]="selectedDevice.firmware_version" />
-
-      <div class="modal-actions">
-        <button class="save-btn" (click)="saveDevice()">
-          {{ editMode ? 'Actualizar' : 'Guardar' }}
-        </button>
-        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
-      </div>
-    </div>
   </div>
 </div>

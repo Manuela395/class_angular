@@ -5,8 +5,8 @@ import { catchError, map, of, tap } from 'rxjs';
 
 export const authGuard: CanActivateFn = (_route, _state) => {
   const auth = inject(AuthService);
-
-  const router = new Router();
+  const router = inject(Router);
+  
   const token = localStorage.getItem('token');
   if (!token) {
     router.navigateByUrl('/login');
@@ -14,7 +14,12 @@ export const authGuard: CanActivateFn = (_route, _state) => {
   }
   // hay token: validemos en el backend
   return auth.me().pipe(
-    tap((res) => auth['_user$'].next(res.user)), // o crea un setUser(res.user)
+    tap((res: { ok: boolean; user: any }) => {
+      const user = res.user;
+      // Update the user in the auth service
+      localStorage.setItem('user', JSON.stringify(user));
+      auth['_user$'].next(user);
+    }),
     map(() => true),
     catchError(() => {
       auth.logout(); // limpia y redirige

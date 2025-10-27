@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RoleService } from '../../services/role.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-roles',
@@ -15,12 +17,7 @@ export class RolesComponent implements OnInit {
   filteredRoles: any[] = [];
   filterText = '';
 
-  // Variables para el modal
-  showModal = false;
-  editMode = false;
-  selectedRole: any = { name: '', code: '' };
-
-  constructor(private roleService: RoleService) {}
+  constructor(private roleService: RoleService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadRoles();
@@ -34,6 +31,7 @@ export class RolesComponent implements OnInit {
         const rolesData = Array.isArray(res) ? res : res.roles;
         this.roles = rolesData || [];
         this.filteredRoles = [...this.roles];
+        this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error cargando roles:', err)
     });
@@ -49,44 +47,14 @@ export class RolesComponent implements OnInit {
     );
   }
 
-  // Abrir modal de creación o edición
-  openModal(role?: any) {
-    if (role) {
-      this.selectedRole = { ...role };
-      this.editMode = true;
-    } else {
-      this.selectedRole = { name: '', code: '' };
-      this.editMode = false;
-    }
-    this.showModal = true;
+  // Navegar a la página de crear
+  goToCreate() {
+    this.router.navigate(['/roles/crear']);
   }
 
-  // Cerrar modal
-  closeModal() {
-    this.showModal = false;
-  }
-
-  // Guardar cambios (crear o actualizar)
-  saveRole() {
-    if (this.editMode) {
-      this.roleService
-        .updateRole(this.selectedRole.id, this.selectedRole)
-        .subscribe({
-          next: () => {
-            this.loadRoles();
-            this.closeModal();
-          },
-          error: (err) => console.error('Error actualizando rol:', err)
-        });
-    } else {
-      this.roleService.createRole(this.selectedRole).subscribe({
-        next: () => {
-          this.loadRoles();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error creando rol:', err)
-      });
-    }
+  // Navegar a la página de actualizar
+  goToUpdate(roleId: number) {
+    this.router.navigate(['/roles/actualizar', roleId]);
   }
 
   // Eliminar rol

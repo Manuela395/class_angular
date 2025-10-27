@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DeviceService } from '../../services/device.service';
 
 @Component({
@@ -15,16 +16,7 @@ export class DevicesComponent implements OnInit {
   filteredDevices: any[] = [];
   filterText = '';
 
-  // Modal
-  showModal = false;
-  editMode = false;
-  selectedDevice: any = {
-    name: '',
-    serial_number: '',
-    firmware_version: '',
-  };
-
-  constructor(private deviceService: DeviceService) {}
+  constructor(private deviceService: DeviceService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadDevices();
@@ -35,7 +27,7 @@ export class DevicesComponent implements OnInit {
     this.deviceService.getDevices().subscribe({
       next: (res) => {
         this.devices = res.devices || [];
-        this.filteredDevices = [...this.devices];
+        this.filteredDevices = [...this.devices]; 
       },
       error: (err) => console.error('Error cargando dispositivos:', err),
     });
@@ -46,52 +38,19 @@ export class DevicesComponent implements OnInit {
     const text = this.filterText.toLowerCase();
     this.filteredDevices = this.devices.filter(
       (d) =>
-        d.name.toLowerCase().includes(text) ||
-        d.serial_number.toLowerCase().includes(text)
+        d.name?.toLowerCase().includes(text) ||
+        d.serial_number?.toLowerCase().includes(text)
     );
   }
 
-  // Abrir modal de crear / editar
-  openModal(device?: any) {
-    if (device) {
-      this.selectedDevice = { ...device };
-      this.editMode = true;
-    } else {
-      this.selectedDevice = {
-        name: '',
-        serial_number: '',
-        firmware_version: '',
-      };
-      this.editMode = false;
-    }
-    this.showModal = true;
+  // Navegar a la página de crear
+  goToCreate() {
+    this.router.navigate(['/dispositivos/crear']);
   }
 
-  closeModal() {
-    this.showModal = false;
-  }
-
-  // Crear o actualizar dispositivo
-  saveDevice() {
-    if (this.editMode) {
-      this.deviceService
-        .updateDevice(this.selectedDevice.id, this.selectedDevice)
-        .subscribe({
-          next: () => {
-            this.loadDevices();
-            this.closeModal();
-          },
-          error: (err) => console.error('Error actualizando dispositivo:', err),
-        });
-    } else {
-      this.deviceService.createDevice(this.selectedDevice).subscribe({
-        next: () => {
-          this.loadDevices();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error creando dispositivo:', err),
-      });
-    }
+  // Navegar a la página de actualizar
+  goToUpdate(deviceId: string) {
+    this.router.navigate(['/dispositivos/actualizar', deviceId]);
   }
 
   // Eliminar dispositivo

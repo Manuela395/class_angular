@@ -5,7 +5,7 @@
   </div>
 
   <div class="actions">
-    <button class="create-btn" (click)="openModal()">+ Crear</button>
+    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
     <div class="filter">
       <input
         type="text"
@@ -39,57 +39,11 @@
           <td>{{ user.role?.name }}</td>
           <td>{{ user.is_active ? 'Activo' : 'Inactivo' }}</td>
           <td class="actions-cell">
-            <button class="edit-btn" (click)="openModal(user)">Editar</button>
+            <button class="edit-btn" (click)="goToUpdate(user.id)">Actualizar</button>
             <button class="delete-btn" (click)="deleteUser(user.id)">Eliminar</button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <!-- Modal de crear / editar usuario -->
-  <div class="modal" *ngIf="showModal">
-    <div class="modal-content">
-      <h3>{{ editMode ? 'Editar Usuario' : 'Crear Usuario' }}</h3>
-
-      <label>Nombre</label>
-      <input type="text" [(ngModel)]="selectedUser.name" />
-
-      <label>Apellido</label>
-      <input type="text" [(ngModel)]="selectedUser.last_name" />
-
-      <label>Identificación</label>
-      <input type="text" [(ngModel)]="selectedUser.identification" />
-
-      <label>Teléfono</label>
-      <input type="text" [(ngModel)]="selectedUser.phone" />
-
-      <label>Correo</label>
-      <input type="email" [(ngModel)]="selectedUser.email" />
-
-      <label>Género</label>
-      <select [(ngModel)]="selectedUser.gender">
-        <option value="M">Masculino</option>
-        <option value="F">Femenino</option>
-      </select>
-
-      <label>Fecha de nacimiento</label>
-      <input type="date" [(ngModel)]="selectedUser.birthdate" />
-
-      <label>Rol</label>
-      <select [(ngModel)]="selectedUser.roles[0]">
-        <option *ngFor="let r of roles" [value]="r.code">{{ r.name }}</option>
-      </select>
-
-      <label *ngIf="!editMode">Contraseña</label>
-      <input *ngIf="!editMode" type="password" [(ngModel)]="selectedUser.password" />
-
-      <div class="modal-actions">
-        <button class="save-btn" (click)="saveUser()">
-          {{ editMode ? 'Actualizar' : 'Guardar' }}
-        </button>
-        <button class="cancel-btn" (click)="closeModal()">Cancelar</button>
-      </div>
-    </div>
   </div>
 </div>
