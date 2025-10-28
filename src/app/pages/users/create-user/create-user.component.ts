@@ -50,13 +50,23 @@ export class CreateUserComponent implements OnInit {
     }
 
     this.userService.createUser(this.newUser).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Usuario creado:', response);
         alert('Usuario creado exitosamente.');
         this.router.navigate(['/usuarios']);
       },
       error: (err) => {
         console.error('Error creando usuario:', err);
-        alert('Hubo un error al crear el usuario.');
+        
+        // Mostrar el error específico del servidor si existe
+        let errorMessage = 'Hubo un error al crear el usuario.';
+        if (err.error?.error) {
+          errorMessage = `Error: ${err.error.error}`;
+        } else if (err.error?.details) {
+          errorMessage = `Error: ${err.error.details}`;
+        }
+        
+        alert(errorMessage);
       }
     });
   }

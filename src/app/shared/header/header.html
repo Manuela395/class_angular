@@ -9,9 +9,26 @@
       </div>
     </div>
 
-    <div class="header-user-info">
+    <div class="header-user-info" (click)="toggleDropdown()" [class.active]="showDropdown">
       <span>{{ user.name }}</span>
       <img class="user-icon" src="images/user256.png" alt="Mi user" />
+      
+      <!-- Menú desplegable -->
+      <div class="dropdown-menu" *ngIf="showDropdown">
+        <div class="dropdown-item">
+          <span class="material-symbols-rounded">person</span>
+          Ver Perfil
+        </div>
+        <div class="dropdown-item">
+          <span class="material-symbols-rounded">settings</span>
+          Configuración de Cuenta
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" (click)="logout()">
+          <span class="material-symbols-rounded">logout</span>
+          Cerrar Sesión
+        </div>
+      </div>
     </div>
   </div>
 </header>

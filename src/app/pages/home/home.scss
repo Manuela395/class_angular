@@ -1,0 +1,14 @@
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  
+  .loading {
+    h2 {
+      color: #1b3b5a;
+      font-weight: 500;
+    }
+  }
+}
+

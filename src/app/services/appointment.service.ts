@@ -3,24 +3,29 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
-  private apiUrl = 'http://localhost:4000/api/users';
+export class AppointmentService {
+  private apiUrl = 'http://localhost:4000/api/appointments';
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<any> {
+  getAppointments(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
 
-  createUser(data: any): Observable<any> {
+  createAppointment(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  updateUser(id: string, data: any): Observable<any> {
+  updateAppointment(id: string, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 
-  deleteUser(id: string): Observable<any> {
+  deleteAppointment(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getAppointmentById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
 }
+

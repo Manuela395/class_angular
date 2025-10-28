@@ -30,13 +30,23 @@ export class CreateDeviceComponent {
     }
 
     this.deviceService.createDevice(this.newDevice).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Dispositivo creado:', response);
         alert('Dispositivo creado exitosamente.');
         this.router.navigate(['/dispositivos']);
       },
       error: (err) => {
         console.error('Error creando dispositivo:', err);
-        alert('Hubo un error al crear el dispositivo.');
+        
+        // Mostrar el error específico del servidor si existe
+        let errorMessage = 'Hubo un error al crear el dispositivo.';
+        if (err.error?.error) {
+          errorMessage = `Error: ${err.error.error}`;
+        } else if (err.error?.details) {
+          errorMessage = `Error: ${err.error.details}`;
+        }
+        
+        alert(errorMessage);
       }
     });
   }

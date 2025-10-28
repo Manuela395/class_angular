@@ -1,4 +1,4 @@
-<div class="devices-container">
+<div class="devices-container" (click)="closeDropdown()">
   <div class="header">
     <h2>DISPOSITIVOS</h2>
     <p>Configuración de dispositivos</p>
@@ -35,10 +35,19 @@
           <td>{{ d.firmware_version }}</td>
           <td>{{ d.createdAt | date: 'yyyy-MM-dd' }}</td>
           <td class="actions-cell">
-            <button class="edit-btn" (click)="goToUpdate(d.id)">Actualizar</button>
-            <button class="delete-btn" (click)="deleteDevice(d.id)">
-              Eliminar
-            </button>
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(d.id, $event)">
+                ⋮
+              </button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === d.id">
+                <button class="dropdown-item" (click)="goToUpdate(d.id); closeDropdown();">
+                  ✏️ Actualizar
+                </button>
+                <button class="dropdown-item delete-item" (click)="deleteDevice(d.id); closeDropdown();">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>

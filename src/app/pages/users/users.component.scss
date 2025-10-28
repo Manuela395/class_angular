@@ -73,25 +73,72 @@
       }
 
       .actions-cell {
-        display: flex;
-        gap: 8px;
+        position: relative;
 
-        .edit-btn {
-          background-color: #22c55e;
-          color: white;
-          border: none;
-          padding: 4px 10px;
-          border-radius: 6px;
-          cursor: pointer;
-        }
+        .dropdown-container {
+          position: relative;
+          display: inline-block;
 
-        .delete-btn {
-          background-color: #ef4444;
-          color: white;
-          border: none;
-          padding: 4px 10px;
-          border-radius: 6px;
-          cursor: pointer;
+          .more-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #6b7280;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+
+            &:hover {
+              background-color: #f3f4f6;
+            }
+          }
+
+          .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 160px;
+            z-index: 100;
+            margin-top: 4px;
+
+            .dropdown-item {
+              display: block;
+              width: 100%;
+              padding: 10px 16px;
+              border: none;
+              background: none;
+              text-align: left;
+              cursor: pointer;
+              font-size: 14px;
+              color: #374151;
+              transition: background-color 0.2s;
+
+              &:first-child {
+                border-radius: 8px 8px 0 0;
+              }
+
+              &:last-child {
+                border-radius: 0 0 8px 8px;
+              }
+
+              &:hover {
+                background-color: #f3f4f6;
+              }
+
+              &.delete-item {
+                color: #ef4444;
+
+                &:hover {
+                  background-color: #fee2e2;
+                }
+              }
+            }
+          }
         }
       }
     }

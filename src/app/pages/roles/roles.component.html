@@ -1,4 +1,4 @@
-<div class="roles-container">
+<div class="roles-container" (click)="closeDropdown()">
   <div class="header">
     <h2>ROLES</h2>
     <p>Configuración de roles</p>
@@ -35,8 +35,19 @@
           <td>{{ role.createdAt | date: 'yyyy-MM-dd' }}</td>
           <td>{{ role.updatedAt | date: 'yyyy-MM-dd' }}</td>
           <td class="actions-cell">
-            <button class="edit-btn" (click)="goToUpdate(role.id)">Actualizar</button>
-            <button class="delete-btn" (click)="deleteRole(role.id)">Eliminar</button>
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(role.id, $event)">
+                ⋮
+              </button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === role.id">
+                <button class="dropdown-item" (click)="goToUpdate(role.id); closeDropdown();">
+                  ✏️ Actualizar
+                </button>
+                <button class="dropdown-item delete-item" (click)="deleteRole(role.id); closeDropdown();">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>

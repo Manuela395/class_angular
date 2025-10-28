@@ -16,8 +16,18 @@ export class RolesComponent implements OnInit {
   roles: any[] = [];
   filteredRoles: any[] = [];
   filterText = '';
+  openDropdownId: number | null = null;
 
   constructor(private roleService: RoleService, private router: Router, private cdr: ChangeDetectorRef) {}
+
+  toggleDropdown(roleId: number, event: Event) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === roleId ? null : roleId;
+  }
+
+  closeDropdown() {
+    this.openDropdownId = null;
+  }
 
   ngOnInit(): void {
     this.loadRoles();
@@ -61,8 +71,14 @@ export class RolesComponent implements OnInit {
   deleteRole(id: number) {
     if (confirm('¿Estás seguro de eliminar este rol?')) {
       this.roleService.deleteRole(id).subscribe({
-        next: () => this.loadRoles(),
-        error: (err) => console.error('Error eliminando rol:', err)
+        next: () => {
+          alert('Rol eliminado exitosamente.');
+          this.loadRoles();
+        },
+        error: (err) => {
+          console.error('Error eliminando rol:', err);
+          alert(err.error?.error || 'Error al eliminar rol.');
+        }
       });
     }
   }

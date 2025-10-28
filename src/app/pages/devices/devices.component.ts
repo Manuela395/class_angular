@@ -15,8 +15,18 @@ export class DevicesComponent implements OnInit {
   devices: any[] = [];
   filteredDevices: any[] = [];
   filterText = '';
+  openDropdownId: string | null = null;
 
   constructor(private deviceService: DeviceService, private router: Router) {}
+
+  toggleDropdown(deviceId: string, event: Event) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === deviceId ? null : deviceId;
+  }
+
+  closeDropdown() {
+    this.openDropdownId = null;
+  }
 
   ngOnInit(): void {
     this.loadDevices();
@@ -57,8 +67,14 @@ export class DevicesComponent implements OnInit {
   deleteDevice(id: string) {
     if (confirm('¿Seguro deseas eliminar este dispositivo?')) {
       this.deviceService.deleteDevice(id).subscribe({
-        next: () => this.loadDevices(),
-        error: (err) => console.error('Error eliminando dispositivo:', err),
+        next: () => {
+          alert('Dispositivo eliminado exitosamente.');
+          this.loadDevices();
+        },
+        error: (err) => {
+          console.error('Error eliminando dispositivo:', err);
+          alert(err.error?.error || 'Error al eliminar dispositivo.');
+        }
       });
     }
   }

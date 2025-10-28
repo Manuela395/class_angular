@@ -84,6 +84,25 @@ export const routes: Routes = [
           import('./pages/devices/edit-device/edit-device.component')
             .then(m => m.EditDeviceComponent)
       },
+
+      {
+        path: 'citas',
+        loadComponent: () =>
+          import('./pages/appointments/appointments.component')
+            .then(m => m.AppointmentsComponent)
+      },
+      {
+        path: 'citas/crear',
+        loadComponent: () =>
+          import('./pages/appointments/create-appointment/create-appointment.component')
+            .then(m => m.CreateAppointmentComponent)
+      },
+      {
+        path: 'citas/actualizar/:id',
+        loadComponent: () =>
+          import('./pages/appointments/edit-appointment/edit-appointment.component')
+            .then(m => m.EditAppointmentComponent)
+      },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },

@@ -1,0 +1,59 @@
+<div class="appointments-container" (click)="closeDropdown()">
+  <div class="header">
+    <h2>ASIGNACIÓN DE CITAS</h2>
+    <p>Configuración de citas</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Buscar por paciente o doctor..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Doctor</th>
+          <th>Fecha Cita</th>
+          <th>Hora Cita</th>
+          <th>Estado</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let apt of filteredAppointments">
+          <td>{{ apt.patient?.name || apt.user_id_patient }}</td>
+          <td>{{ apt.doctor?.name || apt.user_id_doctor }}</td>
+          <td>{{ formatDate(apt.date_appointment) }}</td>
+          <td>{{ formatHour(apt.hour_appointment) }}</td>
+          <td>{{ apt.status || 'Asignada' }}</td>
+          <td class="actions-cell">
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(apt.id, $event)">
+                ⋮
+              </button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === apt.id">
+                <button class="dropdown-item" (click)="goToUpdate(apt.id); closeDropdown();">
+                  ✏️ Actualizar
+                </button>
+                <button class="dropdown-item delete-item" (click)="deleteAppointment(apt.id); closeDropdown();">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

@@ -1,4 +1,4 @@
-<div class="users-container">
+<div class="users-container" (click)="closeDropdown()">
   <div class="header">
     <h2>USUARIOS</h2>
     <p>Configuración de usuarios</p>
@@ -39,8 +39,19 @@
           <td>{{ user.role?.name }}</td>
           <td>{{ user.is_active ? 'Activo' : 'Inactivo' }}</td>
           <td class="actions-cell">
-            <button class="edit-btn" (click)="goToUpdate(user.id)">Actualizar</button>
-            <button class="delete-btn" (click)="deleteUser(user.id)">Eliminar</button>
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(user.id, $event)">
+                ⋮
+              </button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === user.id">
+                <button class="dropdown-item" (click)="goToUpdate(user.id); closeDropdown();">
+                  ✏️ Actualizar
+                </button>
+                <button class="dropdown-item delete-item" (click)="deleteUser(user.id); closeDropdown();">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>

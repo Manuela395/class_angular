@@ -15,11 +15,21 @@ export class UsersComponent implements OnInit {
   users: any[] = [];
   filteredUsers: any[] = [];
   filterText = '';
+  openDropdownId: string | null = null;
 
   constructor(
     private userService: UserService,
     private router: Router, private cdr: ChangeDetectorRef
   ) {}
+
+  toggleDropdown(userId: string, event: Event) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === userId ? null : userId;
+  }
+
+  closeDropdown() {
+    this.openDropdownId = null;
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -62,8 +72,14 @@ export class UsersComponent implements OnInit {
   deleteUser(id: string) {
     if (confirm('¿Estás seguro de eliminar este usuario?')) {
       this.userService.deleteUser(id).subscribe({
-        next: () => this.loadUsers(),
-        error: (err) => console.error('Error eliminando usuario:', err)
+        next: () => {
+          alert('Usuario eliminado exitosamente.');
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Error eliminando usuario:', err);
+          alert(err.error?.error || 'Error al eliminar usuario.');
+        }
       });
     }
   }
