@@ -14,8 +14,8 @@ import { DeviceService } from '../../../services/device.service';
 export class CreateDeviceComponent {
   newDevice = {
     name: '',
-    serial_number: '',
-    firmware_version: ''
+    device_id: '',
+    firmware: ''
   };
 
   constructor(
@@ -24,8 +24,8 @@ export class CreateDeviceComponent {
   ) {}
 
   saveDevice() {
-    if (!this.newDevice.name || !this.newDevice.serial_number || !this.newDevice.firmware_version) {
-      alert('Por favor, completa todos los campos.');
+    if (!this.newDevice.name || !this.newDevice.device_id || !this.newDevice.firmware) {
+      alert('Por favor, completa todos los campos obligatorios.');
       return;
     }
 

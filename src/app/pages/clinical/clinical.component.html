@@ -1,0 +1,58 @@
+<div class="clinical-container" (click)="closeDropdown()">
+  <div class="header">
+    <h2>LISTADO DE TRIAGES</h2>
+    <p>Listado de pacientes en consulta médica con triage realizado</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Buscar por paciente o identificación..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Identificación</th>
+          <th>Fecha Cita</th>
+          <th>Hora Cita</th>
+          <th>Triage</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let triage of filteredTriages">
+          <td>{{ triage.appointment?.patient?.name || 'N/A' }} {{ triage.appointment?.patient?.last_name || '' }}</td>
+          <td>{{ triage.appointment?.patient?.identification || 'N/A' }}</td>
+          <td>{{ formatDate(triage.appointment?.date_appointment) }}</td>
+          <td>{{ formatHour(triage.appointment?.hour_appointment) }}</td>
+          <td>{{ hasTriageData(triage) ? 'Sí' : 'No' }}</td>
+          <td class="actions-cell">
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(triage.id, $event)">
+                ⋮
+              </button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === triage.id">
+                <button class="dropdown-item" (click)="goToUpdate(triage.id); closeDropdown();">
+                  ✏️ Actualizar
+                </button>
+                <button class="dropdown-item delete-item" (click)="deleteTriage(triage.id); closeDropdown();">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

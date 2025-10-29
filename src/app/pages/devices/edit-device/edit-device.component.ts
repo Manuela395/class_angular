@@ -15,8 +15,8 @@ export class EditDeviceComponent implements OnInit {
   deviceId: string | null = null;
   device = {
     name: '',
-    serial_number: '',
-    firmware_version: ''
+    device_id: '',
+    firmware: ''
   };
 
   constructor(
@@ -34,25 +34,28 @@ export class EditDeviceComponent implements OnInit {
 
   loadDevice() {
     if (this.deviceId) {
-      this.deviceService.getDevices().subscribe({
+      this.deviceService.getDevice(this.deviceId).subscribe({
         next: (res) => {
-          const device = res.devices?.find((d: any) => d.id === this.deviceId);
+          const device = res.device;
           if (device) {
             this.device = {
-              name: device.name,
-              serial_number: device.serial_number || '',
-              firmware_version: device.firmware_version || ''
+              name: device.name || '',
+              device_id: device.device_id || '',
+              firmware: device.firmware || ''
             };
           }
         },
-        error: (err: any) => console.error('Error cargando dispositivo:', err)
+        error: (err: any) => {
+          console.error('Error cargando dispositivo:', err);
+          alert(err.error?.error || 'Error al cargar el dispositivo.');
+        }
       });
     }
   }
 
   updateDevice() {
-    if (!this.device.name || !this.device.serial_number || !this.device.firmware_version) {
-      alert('Por favor, completa todos los campos.');
+    if (!this.device.name || !this.device.firmware) {
+      alert('Por favor, completa todos los campos obligatorios.');
       return;
     }
 
@@ -64,7 +67,8 @@ export class EditDeviceComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Error actualizando dispositivo:', err);
-          alert('Hubo un error al actualizar el dispositivo.');
+          const errorMsg = err.error?.error || 'Hubo un error al actualizar el dispositivo.';
+          alert(errorMsg);
         }
       });
     }

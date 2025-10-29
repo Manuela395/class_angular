@@ -1,0 +1,109 @@
+<div class="create-triage-container">
+  <div class="header">
+    <h2>CREAR NUEVO TRIAGE</h2>
+    <p>Completa la información del triage médico.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-group">
+      <label for="appointment">Cita *</label>
+      <select id="appointment" [(ngModel)]="newTriage.appointment_id">
+        <option value="">Seleccione una cita</option>
+        <option *ngFor="let apt of appointments" [value]="apt.id">
+          {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="height">Altura (cm)</label>
+        <input
+          id="height"
+          type="number"
+          [(ngModel)]="newTriage.height_cm"
+          placeholder="Ej: 170"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="weight">Peso (kg)</label>
+        <input
+          id="weight"
+          type="number"
+          [(ngModel)]="newTriage.weight_kg"
+          placeholder="Ej: 70"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="newTriage.smoker" />
+          Fumador
+        </label>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="newTriage.drinker" />
+          Bebedor
+        </label>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="newTriage.practice_sport" />
+          Practica Deporte
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="consult-type">Tipo de Consulta</label>
+      <input
+        id="consult-type"
+        type="text"
+        [(ngModel)]="newTriage.consult_type"
+        placeholder="Ej: Control rutinario"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="congenital">Enfermedades Congénitas</label>
+      <textarea
+        id="congenital"
+        rows="3"
+        [(ngModel)]="newTriage.congenital_diseases"
+        placeholder="Describa enfermedades congénitas..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="allergies">Alergias</label>
+      <textarea
+        id="allergies"
+        rows="3"
+        [(ngModel)]="newTriage.allergies"
+        placeholder="Describa alergias..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="summary">Resumen</label>
+      <textarea
+        id="summary"
+        rows="4"
+        [(ngModel)]="newTriage.summary"
+        placeholder="Resumen de la consulta..."
+      ></textarea>
+    </div>
+
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="saveTriage()">Guardar Triage</button>
+      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

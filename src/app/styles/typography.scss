@@ -1,0 +1,68 @@
+/* Typography utilities - Global font consistency */
+/* This file ensures all elements use the Poppins font family */
+
+/* Force font inheritance for all elements */
+* {
+  font-family: inherit;
+}
+
+/* Specific overrides for elements that might have default fonts */
+button, input, select, textarea, label, span, div, p, h1, h2, h3, h4, h5, h6, a, th, td, table, nav, ul, li {
+  font-family: 'Poppins', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
+/* Material Icons should keep their font */
+.material-symbols-rounded, .msr {
+  font-family: 'Material Symbols Rounded' !important;
+}
+
+/* Ensure consistent font weights */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+button {
+  font-weight: 600;
+}
+
+label {
+  font-weight: 600;
+}
+
+th {
+  font-weight: 600;
+}
+
+/* Ensure consistent font sizes */
+body {
+  font-size: 16px;
+}
+
+button {
+  font-size: 0.95rem;
+}
+
+input, select, textarea {
+  font-size: 0.95rem;
+}
+
+label {
+  font-size: 0.95rem;
+}
+
+th, td {
+  font-size: 0.95rem;
+}
+
+/* Ensure consistent line heights */
+body {
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
+}

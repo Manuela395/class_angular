@@ -17,23 +17,24 @@
       </div>
 
       <div class="form-group">
-        <label for="device-serial">Número de Serie *</label>
+        <label for="device-id">Device ID *</label>
         <input
-          id="device-serial"
+          id="device-id"
           type="text"
-          [(ngModel)]="newDevice.serial_number"
-          placeholder="Ej: SN123456"
+          [(ngModel)]="newDevice.device_id"
+          placeholder="Ej: 1023965874"
         />
+        <small class="form-help">ID de identificación del paciente asociado</small>
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label for="device-firmware"> Firmware *</label>
+        <label for="device-firmware">Firmware *</label>
         <input
           id="device-firmware"
           type="text"
-          [(ngModel)]="newDevice.firmware_version"
+          [(ngModel)]="newDevice.firmware"
           placeholder="Ej: 1.0.0"
         />
       </div>

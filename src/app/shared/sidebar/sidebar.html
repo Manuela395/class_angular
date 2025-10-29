@@ -18,9 +18,9 @@
       <span class="msr">event</span><span class="txt">Citas</span>
     </a>
 
-    <!-- Solo Doctor puede ver Consultas, Sesiones y Lecturas -->
-    <a *ngIf="isDoctor()" routerLink="/consultas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-      <span class="msr">medical_information</span><span class="txt">Consultas</span>
+    <!-- Solo Doctor puede ver Triages, Sesiones y Lecturas -->
+    <a *ngIf="isDoctor()" routerLink="/triages" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="msr">medical_information</span><span class="txt">Triages</span>
     </a>
     <a *ngIf="isDoctor()" routerLink="/sesiones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="msr">monitor_heart</span><span class="txt">Sesiones</span>

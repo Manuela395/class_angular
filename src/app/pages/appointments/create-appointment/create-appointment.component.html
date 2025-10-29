@@ -5,8 +5,83 @@
   </div>
 
   <div class="form-card">
-    <p>Formulario de creación pendiente.</p>
-    <button (click)="goBack()">Volver</button>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="doctor">Doctor *</label>
+        <select id="doctor" [(ngModel)]="newAppointment.user_id_doctor">
+          <option value="">Seleccione un doctor</option>
+          <option *ngFor="let doc of doctors" [value]="doc.id">
+            {{ doc.name }} {{ doc.last_name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="patient">Paciente *</label>
+        <select id="patient" [(ngModel)]="newAppointment.user_id_patient">
+          <option value="">Seleccione un paciente</option>
+          <option *ngFor="let pac of patients" [value]="pac.id">
+            {{ pac.name }} {{ pac.last_name }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="date-appointment">Fecha Cita *</label>
+        <input
+          id="date-appointment"
+          type="date"
+          [(ngModel)]="newAppointment.date_appointment"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="hour-appointment">Hora Cita *</label>
+        <input
+          id="hour-appointment"
+          type="time"
+          [(ngModel)]="newAppointment.hour_appointment"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="status">Estado</label>
+        <select id="status" [(ngModel)]="newAppointment.status">
+          <option value="Asignada">Asignada</option>
+          <option value="Confirmada">Confirmada</option>
+          <option value="Cancelada">Cancelada</option>
+          <option value="Completada">Completada</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="place">Lugar</label>
+        <input
+          id="place"
+          type="text"
+          [(ngModel)]="newAppointment.place"
+          placeholder="Ej: Consultorio 1"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notas</label>
+      <textarea
+        id="notes"
+        rows="4"
+        [(ngModel)]="newAppointment.notes"
+        placeholder="Notas adicionales sobre la cita..."
+      ></textarea>
+    </div>
+
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="saveAppointment()">Guardar Cita</button>
+      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+    </div>
   </div>
 </div>
-

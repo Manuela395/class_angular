@@ -10,7 +10,7 @@
       <input
         type="text"
         [(ngModel)]="filterText"
-        placeholder="Buscar por nombre o serie..."
+        placeholder="Buscar por nombre o device ID..."
         (input)="applyFilter()"
       />
       <button class="filter-btn">Filtrar</button>
@@ -18,22 +18,26 @@
   </div>
 
   <div class="table-container">
-    <table>
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Cargando dispositivos...</p>
+    </div>
+    
+    <table *ngIf="!loading">
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Número de Serie</th>
-          <th>Versión Firmware</th>
+          <th>Device ID</th>
           <th>Fecha Creación</th>
+          <th>Fecha Actualización</th>
           <th>Opciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let d of filteredDevices">
-          <td>{{ d.name }}</td>
-          <td>{{ d.serial_number }}</td>
-          <td>{{ d.firmware_version }}</td>
-          <td>{{ d.createdAt | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ d.name || '-' }}</td>
+          <td>{{ d.device_id || '-' }}</td>
+          <td>{{ formatDate(d.created_at) }}</td>
+          <td>{{ formatDate(d.updated_at) }}</td>
           <td class="actions-cell">
             <div class="dropdown-container" (click)="$event.stopPropagation()">
               <button class="more-btn" (click)="toggleDropdown(d.id, $event)">
@@ -49,6 +53,9 @@
               </div>
             </div>
           </td>
+        </tr>
+        <tr *ngIf="!loading && filteredDevices.length === 0">
+          <td colspan="5" class="empty-state">No hay dispositivos registrados</td>
         </tr>
       </tbody>
     </table>

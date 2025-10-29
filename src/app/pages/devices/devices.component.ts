@@ -16,8 +16,13 @@ export class DevicesComponent implements OnInit {
   filteredDevices: any[] = [];
   filterText = '';
   openDropdownId: string | null = null;
+  loading = false;
 
-  constructor(private deviceService: DeviceService, private router: Router) {}
+  constructor(
+    private deviceService: DeviceService, 
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   toggleDropdown(deviceId: string, event: Event) {
     event.stopPropagation();
@@ -34,22 +39,30 @@ export class DevicesComponent implements OnInit {
 
   // Obtener todos los dispositivos
   loadDevices() {
+    this.loading = true;
     this.deviceService.getDevices().subscribe({
       next: (res) => {
+        console.log('Devices loaded:', res);
         this.devices = res.devices || [];
-        this.filteredDevices = [...this.devices]; 
+        this.filteredDevices = [...this.devices];
+        this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error cargando dispositivos:', err),
+      error: (err) => {
+        console.error('Error cargando dispositivos:', err);
+        this.loading = false;
+        alert('Error cargando dispositivos: ' + (err.error?.error || err.message));
+      },
     });
   }
 
-  // Filtrar por nombre o número de serie
+  // Filtrar por nombre o device_id
   applyFilter() {
     const text = this.filterText.toLowerCase();
     this.filteredDevices = this.devices.filter(
       (d) =>
         d.name?.toLowerCase().includes(text) ||
-        d.serial_number?.toLowerCase().includes(text)
+        d.device_id?.toLowerCase().includes(text)
     );
   }
 
@@ -76,6 +89,17 @@ export class DevicesComponent implements OnInit {
           alert(err.error?.error || 'Error al eliminar dispositivo.');
         }
       });
+    }
+  }
+
+  // Formatear fecha para mostrar
+  formatDate(date: string | Date | null | undefined): string {
+    if (!date) return '-';
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date;
+      return d.toISOString().split('T')[0];
+    } catch (e) {
+      return '-';
     }
   }
 }

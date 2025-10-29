@@ -75,6 +75,8 @@
   cursor: pointer;
   transition: background-color 0.2s;
   color: #333;
+  font-family: inherit; /* Usa la fuente global */
+  font-weight: 500;
 }
 
 .dropdown-item:hover {

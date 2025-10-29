@@ -21,6 +21,7 @@ $side-w: 240px;
   font-weight: 800;
   letter-spacing: 1px;
   margin: 18px 20px 12px;
+  font-family: inherit; /* Usa la fuente global */
 }
 
 .nav {
@@ -40,6 +41,7 @@ $side-w: 240px;
   background: rgba(255, 255, 255, 0.08);
   transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
   font-weight: 600;
+  font-family: inherit; /* Usa la fuente global */
 }
 .nav a .ico {
   width: 20px;

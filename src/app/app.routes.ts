@@ -103,6 +103,37 @@ export const routes: Routes = [
           import('./pages/appointments/edit-appointment/edit-appointment.component')
             .then(m => m.EditAppointmentComponent)
       },
+
+      {
+        path: 'triages',
+        loadComponent: () =>
+          import('./pages/clinical/clinical.component')
+            .then(m => m.ClinicalComponent)
+      },
+      {
+        path: 'triages/crear',
+        loadComponent: () =>
+          import('./pages/clinical/create-triage/create-triage.component')
+            .then(m => m.CreateTriageComponent)
+      },
+      {
+        path: 'triages/actualizar/:id',
+        loadComponent: () =>
+          import('./pages/clinical/edit-triage/edit-triage.component')
+            .then(m => m.EditTriageComponent)
+      },
+      {
+        path: 'sesiones',
+        loadComponent: () =>
+          import('./pages/sessions/sessions.component')
+            .then(m => m.SessionsComponent)
+      },
+      {
+        path: 'lecturas',
+        loadComponent: () =>
+          import('./pages/readings/readings.component')
+            .then(m => m.ReadingsComponent)
+      },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },

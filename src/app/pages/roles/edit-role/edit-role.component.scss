@@ -1,2 +1,142 @@
-// Add your styles here
+.edit-role-container {
+  padding: 3.5rem 4rem;
+  color: #103049;
+  background-color: #f7fafc;
+  min-height: calc(100vh - 0px);
+}
 
+.header {
+  margin-bottom: 2rem;
+  h2 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: 0.6px;
+    color: #11324a;
+  }
+  p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+  }
+}
+
+.form-card {
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1.6rem 2rem;
+  box-shadow: 0 6px 20px rgba(16, 50, 74, 0.06);
+  border: 1px solid rgba(17, 50, 74, 0.04);
+  margin-top: 0.8rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+  
+  label {
+    font-weight: 700;
+    color: #0f3a55;
+    font-size: 0.95rem;
+  }
+  
+  input, select {
+    height: 46px;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fbfdff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: box-shadow 150ms ease, border-color 150ms ease;
+    font-family: inherit;
+  }
+  
+  input::placeholder {
+    color: #9aa6b2;
+    font-weight: 500;
+  }
+  
+  input:focus, select:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 4px 14px rgba(30, 136, 229, 0.12);
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 0.8rem;
+  padding-top: 0.4rem;
+}
+
+button {
+  min-width: 140px;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.98rem;
+  box-shadow: 0 4px 10px rgba(16, 50, 74, 0.06);
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms;
+  font-family: inherit; /* Usa la fuente global */
+}
+button:active { transform: translateY(1px); }
+
+.btn-save {
+  background: linear-gradient(180deg, #1083e6 0%, #0b63b5 100%);
+  color: #fff;
+  border: 1px solid rgba(10, 57, 110, 0.12);
+}
+.btn-save:hover {
+  opacity: 0.95;
+  box-shadow: 0 8px 18px rgba(16, 50, 74, 0.12);
+}
+
+.btn-cancel {
+  background: #eef2f6;
+  color: #223645;
+  border: 1px solid rgba(34, 54, 69, 0.06);
+}
+.btn-cancel:hover {
+  opacity: 0.95;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-actions.centered {
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .edit-role-container {
+    padding: 2rem;
+  }
+  .form-card {
+    margin: 0 auto;
+    max-width: 100%;
+    padding: 1.2rem;
+  }
+  .form-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    min-width: 120px;
+  }
+}

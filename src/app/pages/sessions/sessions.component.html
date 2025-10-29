@@ -1,0 +1,25 @@
+<div class="sessions-container">
+  <div class="header">
+    <h2>SESIONES ECG</h2>
+    <p>Gestión de sesiones de electrocardiograma</p>
+  </div>
+
+  <div class="actions">
+    <button class="create-btn" (click)="goBack()">Volver</button>
+    <div class="filter">
+      <input
+        type="text"
+        [(ngModel)]="filterText"
+        placeholder="Buscar..."
+        (input)="applyFilter()"
+      />
+      <button class="filter-btn">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <p>Página de sesiones ECG en desarrollo...</p>
+  </div>
+</div>
+
+

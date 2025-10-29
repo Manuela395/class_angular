@@ -25,8 +25,8 @@ export class Home implements OnInit {
       // Admin auxiliar ve citas
       this.router.navigate(['/citas']);
     } else if (roleCode === 'doc') {
-      // Doctor ve consultas
-      this.router.navigate(['/consultas']);
+      // Doctor ve triages
+      this.router.navigate(['/triages']);
     }
   }
 }
