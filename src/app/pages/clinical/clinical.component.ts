@@ -16,6 +16,7 @@ export class ClinicalComponent implements OnInit {
   filteredTriages: any[] = [];
   filterText = '';
   openDropdownId: number | null = null;
+  selectedTriage: number | null = null;
 
   constructor(
     private triageService: TriageService,
@@ -80,6 +81,11 @@ export class ClinicalComponent implements OnInit {
         }
       });
     }
+  }
+
+  onSelectTriage(triageId: number) {
+    this.selectedTriage = triageId;
+    // Aquí puedes realizar lógica adicional, como emitir evento o guardar el seleccionando
   }
 
   formatDate(date: string): string {

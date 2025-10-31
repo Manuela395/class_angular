@@ -1,0 +1,57 @@
+.edit-session-container {
+  padding: 20px;
+  color: #1b3b5a;
+
+  .header {
+    h2 { margin: 0; font-weight: bold; }
+    p { margin: 0; color: #6b7280; }
+  }
+
+  .form-card {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+
+  .form-row { display: flex; gap: 16px; }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    input, select, textarea {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+  }
+
+  .form-actions.centered {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .btn-save {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    background-color: #e5e7eb;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+}
+
+

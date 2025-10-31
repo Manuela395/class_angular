@@ -26,7 +26,7 @@
           <th>Fecha Cita</th>
           <th>Hora Cita</th>
           <th>Triage</th>
-          <th>Opciones</th>
+          <th>Seleccionar</th>
         </tr>
       </thead>
       <tbody>
@@ -36,20 +36,14 @@
           <td>{{ formatDate(triage.appointment?.date_appointment) }}</td>
           <td>{{ formatHour(triage.appointment?.hour_appointment) }}</td>
           <td>{{ hasTriageData(triage) ? 'Sí' : 'No' }}</td>
-          <td class="actions-cell">
-            <div class="dropdown-container" (click)="$event.stopPropagation()">
-              <button class="more-btn" (click)="toggleDropdown(triage.id, $event)">
-                ⋮
-              </button>
-              <div class="dropdown-menu" *ngIf="openDropdownId === triage.id">
-                <button class="dropdown-item" (click)="goToUpdate(triage.id); closeDropdown();">
-                  ✏️ Actualizar
-                </button>
-                <button class="dropdown-item delete-item" (click)="deleteTriage(triage.id); closeDropdown();">
-                  🗑️ Eliminar
-                </button>
-              </div>
-            </div>
+          <td class="select-radio-cell">
+            <input 
+              type="radio" 
+              name="selectedTriage" 
+              [value]="triage.id" 
+              [checked]="selectedTriage === triage.id" 
+              (change)="onSelectTriage(triage.id)"
+            />
           </td>
         </tr>
       </tbody>

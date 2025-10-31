@@ -36,8 +36,8 @@
         <tr *ngFor="let d of filteredDevices">
           <td>{{ d.name || '-' }}</td>
           <td>{{ d.device_id || '-' }}</td>
-          <td>{{ formatDate(d.created_at) }}</td>
-          <td>{{ formatDate(d.updated_at) }}</td>
+          <td>{{ formatDate(d.created_at || d.createdAt) }}</td>
+          <td>{{ formatDate(d.updated_at || d.updatedAt) }}</td>
           <td class="actions-cell">
             <div class="dropdown-container" (click)="$event.stopPropagation()">
               <button class="more-btn" (click)="toggleDropdown(d.id, $event)">

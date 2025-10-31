@@ -1,24 +1,61 @@
-<div class="sessions-container">
+<div class="sessions-container" (click)="closeDropdown()">
   <div class="header">
     <h2>SESIONES ECG</h2>
     <p>Gestión de sesiones de electrocardiograma</p>
   </div>
 
   <div class="actions">
-    <button class="create-btn" (click)="goBack()">Volver</button>
     <div class="filter">
       <input
         type="text"
         [(ngModel)]="filterText"
-        placeholder="Buscar..."
+        placeholder="Buscar por paciente o identificación..."
         (input)="applyFilter()"
       />
       <button class="filter-btn">Filtrar</button>
     </div>
+    <button class="create-btn" (click)="openCreate()">+ Crear</button>
   </div>
 
   <div class="table-container">
-    <p>Página de sesiones ECG en desarrollo...</p>
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Cargando sesiones...</p>
+    </div>
+    <table *ngIf="!loading">
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Identificación</th>
+          <th>Dispositivo</th>
+          <th>Lead</th>
+          <th>Frecuencia Hz</th>
+          <th>Doctor</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of filteredSessions">
+          <td>{{ s.appointment?.patient?.name }} {{ s.appointment?.patient?.last_name }}</td>
+          <td>{{ s.appointment?.patient?.identification }}</td>
+          <td>{{ s.device?.name || 'N/A' }}</td>
+          <td>{{ s.lead_config || 'N/A' }}</td>
+          <td>{{ s.sampling_hz || 'N/A' }}</td>
+          <td>{{ s.appointment?.doctor?.name }} {{ s.appointment?.doctor?.last_name }}</td>
+          <td class="actions-cell">
+            <div class="dropdown-container" (click)="$event.stopPropagation()">
+              <button class="more-btn" (click)="toggleDropdown(s.id, $event)">⋮</button>
+              <div class="dropdown-menu" *ngIf="openDropdownId === s.id">
+                <button class="dropdown-item" (click)="goToUpdate(s.id); closeDropdown();">✏️ Actualizar</button>
+                <button class="dropdown-item delete-item" (click)="deleteSession(s.id); closeDropdown();">🗑️ Eliminar</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!loading && filteredSessions.length === 0">
+          <td colspan="7" class="empty-state">No hay sesiones ECG registradas.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 

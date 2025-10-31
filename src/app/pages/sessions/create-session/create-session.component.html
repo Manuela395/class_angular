@@ -1,0 +1,46 @@
+<div class="create-session-container">
+  <div class="header">
+    <h2>CREAR SESIÓN ECG</h2>
+    <p>Completa la información de la sesión.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-group">
+      <label for="appointment">Cita *</label>
+      <select id="appointment" [(ngModel)]="form.appointment_id">
+        <option value="">Seleccione una cita</option>
+        <option *ngFor="let apt of appointments" [value]="apt.id">
+          {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="device">Dispositivo *</label>
+      <select id="device" [(ngModel)]="form.device_id">
+        <option value="">Seleccione un dispositivo</option>
+        <option *ngFor="let d of devices" [value]="d.id">
+          {{ d.name || d.device_id }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sampling">Frecuencia (Hz)</label>
+        <input id="sampling" type="number" [(ngModel)]="form.sampling_hz" placeholder="Ej: 500" />
+      </div>
+      <div class="form-group">
+        <label for="lead">Lead</label>
+        <input id="lead" type="text" [(ngModel)]="form.lead_config" placeholder="Ej: II" />
+      </div>
+    </div>
+
+    <div class="form-actions centered">
+      <button class="btn-save" (click)="save()">Guardar</button>
+      <button class="btn-cancel" (click)="cancel()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+

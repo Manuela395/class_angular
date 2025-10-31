@@ -129,6 +129,18 @@ export const routes: Routes = [
             .then(m => m.SessionsComponent)
       },
       {
+        path: 'sesiones/crear',
+        loadComponent: () =>
+          import('./pages/sessions/create-session/create-session.component')
+            .then(m => m.CreateSessionComponent)
+      },
+      {
+        path: 'sesiones/editar/:id',
+        loadComponent: () =>
+          import('./pages/sessions/edit-session/edit-session.component')
+            .then(m => m.EditSessionComponent)
+      },
+      {
         path: 'lecturas',
         loadComponent: () =>
           import('./pages/readings/readings.component')
