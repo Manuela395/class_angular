@@ -1,24 +1,60 @@
 <div class="readings-container">
   <div class="header">
-    <h2>LECTURAS ECG</h2>
-    <p>Gestión de lecturas de electrocardiograma</p>
+    <h2>LISTADO DE LECTURAS ECG</h2>
+    <p>Listado de pacientes en consulta médica con lecturas de ECG</p>
   </div>
 
   <div class="actions">
-    <button class="create-btn" (click)="goBack()">Volver</button>
     <div class="filter">
       <input
         type="text"
         [(ngModel)]="filterText"
-        placeholder="Buscar..."
+        placeholder="Buscar por paciente, identificación o doctor..."
         (input)="applyFilter()"
       />
       <button class="filter-btn">Filtrar</button>
     </div>
+    <button class="create-btn" (click)="openCreate()">+ Crear</button>
   </div>
 
   <div class="table-container">
-    <p>Página de lecturas ECG en desarrollo...</p>
+    <div *ngIf="errorMessage" class="error-message">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <div *ngIf="loading && !errorMessage" class="loading-indicator">
+      <p>Cargando lecturas...</p>
+    </div>
+
+    <table *ngIf="!loading && !errorMessage && hasActiveSessions">
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Identificación</th>
+          <th>Fecha Creación</th>
+          <th>Número de registros</th>
+          <th>Doctor</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reading of filteredReadings">
+          <td>{{ reading.patient_name || 'N/A' }}</td>
+          <td>{{ reading.patient_identification || 'N/A' }}</td>
+          <td>{{ formatDate(reading.createdAt) }}</td>
+          <td>{{ reading.records_count || 0 }}</td>
+          <td>{{ reading.doctor_name || 'N/A' }}</td>
+          <td class="actions-cell">
+            <button class="detail-btn" (click)="goToDetail(reading.id)" title="Ver detalle">
+              👁️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="!loading && filteredReadings.length === 0">
+          <td colspan="6" class="empty-state">No hay lecturas ECG registradas.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 

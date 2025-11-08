@@ -80,7 +80,11 @@ export class CreateAppointmentComponent implements OnInit {
         console.error('Error creando cita:', err);
         
         let errorMessage = 'Hubo un error al crear la cita.';
-        if (err.error?.error) {
+        
+        // Manejar error específico de cita activa
+        if (err.status === 400 && err.error?.error) {
+          errorMessage = err.error.error;
+        } else if (err.error?.error) {
           errorMessage = `Error: ${err.error.error}`;
         } else if (err.error?.details) {
           errorMessage = `Error: ${err.error.details}`;

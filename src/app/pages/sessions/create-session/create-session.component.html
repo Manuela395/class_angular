@@ -6,38 +6,52 @@
 
   <div class="form-card">
     <div class="form-group">
-      <label for="appointment">Cita *</label>
-      <select id="appointment" [(ngModel)]="form.appointment_id">
-        <option value="">Seleccione una cita</option>
-        <option *ngFor="let apt of appointments" [value]="apt.id">
-          {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
-        </option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="device">Dispositivo *</label>
-      <select id="device" [(ngModel)]="form.device_id">
-        <option value="">Seleccione un dispositivo</option>
-        <option *ngFor="let d of devices" [value]="d.id">
-          {{ d.name || d.device_id }}
+      <label for="patient">Nombres y Apellidos *</label>
+      <select id="patient" [(ngModel)]="selectedPatientId" (ngModelChange)="onPatientChange()">
+        <option value="">Seleccione un paciente</option>
+        <option *ngFor="let patient of eligiblePatients" [value]="patient.patient_id">
+          {{ patient.patient_name }} {{ patient.patient_last_name }}
         </option>
       </select>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label for="sampling">Frecuencia (Hz)</label>
-        <input id="sampling" type="number" [(ngModel)]="form.sampling_hz" placeholder="Ej: 500" />
+        <label for="patient-identification">Identificación del paciente</label>
+        <input
+          id="patient-identification"
+          type="text"
+          [value]="selectedPatientIdentification"
+          readonly
+          placeholder="Se seleccionará automáticamente"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="assigned-device">Dispositivo asignado</label>
+        <input
+          id="assigned-device"
+          type="text"
+          [value]="selectedAssignedDevice"
+          readonly
+          placeholder="Se seleccionará automáticamente"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sampling">Frecuencia de muestreo Hz</label>
+        <input id="sampling" type="number" [(ngModel)]="form.sampling_hz" placeholder="Ej: 250" />
       </div>
       <div class="form-group">
-        <label for="lead">Lead</label>
-        <input id="lead" type="text" [(ngModel)]="form.lead_config" placeholder="Ej: II" />
+        <label for="lead">Configuración electrodos</label>
+        <input id="lead" type="text" [(ngModel)]="form.lead_config" placeholder="Ej: DI" />
       </div>
     </div>
 
     <div class="form-actions centered">
-      <button class="btn-save" (click)="save()">Guardar</button>
+      <button class="btn-save" (click)="save()">Crear</button>
       <button class="btn-cancel" (click)="cancel()">Cancelar</button>
     </div>
   </div>

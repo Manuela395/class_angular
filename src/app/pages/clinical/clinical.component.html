@@ -5,7 +5,6 @@
   </div>
 
   <div class="actions">
-    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
     <div class="filter">
       <input
         type="text"
@@ -15,6 +14,7 @@
       />
       <button class="filter-btn">Filtrar</button>
     </div>
+    <button class="create-btn" (click)="goToCreate()">+ Crear</button>
   </div>
 
   <div class="table-container">
@@ -35,15 +35,22 @@
           <td>{{ triage.appointment?.patient?.identification || 'N/A' }}</td>
           <td>{{ formatDate(triage.appointment?.date_appointment) }}</td>
           <td>{{ formatHour(triage.appointment?.hour_appointment) }}</td>
-          <td>{{ hasTriageData(triage) ? 'Sí' : 'No' }}</td>
+          <td>{{ triage.hasTriage ? 'Sí' : 'No' }}</td>
           <td class="select-radio-cell">
-            <input 
-              type="radio" 
-              name="selectedTriage" 
-              [value]="triage.id" 
-              [checked]="selectedTriage === triage.id" 
-              (change)="onSelectTriage(triage.id)"
-            />
+            <ng-container *ngIf="triage.hasTriage; else selectForCreation">
+              <button class="detail-link" type="button" (click)="viewDetail(triage.triageId)">
+                Ver detalle
+              </button>
+            </ng-container>
+            <ng-template #selectForCreation>
+              <input 
+                type="radio" 
+                name="selectedTriage" 
+                [value]="triage.id" 
+                [checked]="selectedTriage === triage.id" 
+                (change)="onSelectTriage(triage.id)"
+              />
+            </ng-template>
           </td>
         </tr>
       </tbody>

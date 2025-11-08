@@ -1,0 +1,151 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1>CREAR LECTURA ECG</h1>
+        <p>Formulario para realizar nuevas lecturas de electrocardiograma</p>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="form-container">
+    <form [formGroup]="lecturaForm" (ngSubmit)="createLectura()" class="lectura-form">
+     
+      <div class="form-section">
+        <!-- Información Básica -->
+        <div class="form-columns">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="patientId" class="form-label">Paciente *</label>
+              <select id="patientId" formControlName="patientId" class="form-input">
+                <option value="">Seleccione un paciente</option>
+                <option *ngFor="let patient of patients" [value]="patient.id">
+                  {{ getFullName(patient) }} - {{ patient.identification }}
+                </option>
+              </select>
+              <div *ngIf="lecturaForm.get('patientId')?.touched && lecturaForm.get('patientId')?.invalid" class="error-message">
+                El paciente es requerido
+              </div>
+            </div>
+ 
+            <div class="form-group">
+              <label for="recordCount" class="form-label">Número de Registros *</label>
+              <input type="number" id="recordCount" formControlName="recordCount" class="form-input" min="1">
+              <div *ngIf="lecturaForm.get('recordCount')?.touched && lecturaForm.get('recordCount')?.invalid" class="error-message">
+                <span *ngIf="lecturaForm.get('recordCount')?.errors?.['required']">El número de registros es requerido</span>
+                <span *ngIf="lecturaForm.get('recordCount')?.errors?.['min']">Debe ser al menos 1</span>
+              </div>
+            </div>
+          </div>
+ 
+          <div class="form-column">
+            <div class="form-group">
+              <label for="observations" class="form-label">Observaciones</label>
+              <textarea id="observations" formControlName="observations" class="form-input" rows="4" placeholder="Observaciones adicionales..."></textarea>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Control de Dispositivo ECG -->
+        <div class="device-control-section">
+          <h3>Control de Dispositivo ECG</h3>
+         
+          <div class="device-status">
+            <div class="status-indicator" [class.connected]="deviceConnected">
+              {{ deviceConnected ? '● CONECTADO' : '○ DESCONECTADO' }}
+            </div>
+           
+            <div class="device-buttons">
+              <button type="button" class="btn btn-connect" (click)="connectDevice()" [disabled]="deviceConnected">
+                Conectar Dispositivo
+              </button>
+              <button type="button" class="btn btn-disconnect" (click)="disconnectDevice()" [disabled]="!deviceConnected">
+                Desconectar
+              </button>
+            </div>
+          </div>
+ 
+          <!-- Monitor ECG Integrado -->
+          <div class="ecg-integrated-container" *ngIf="deviceConnected">
+           
+            <!-- Componente ECG Monitor Embebido -->
+            <app-ecg-monitor-embedded
+              [deviceId]="'esp32-ecg-01'"
+              (dataReceived)="onEcgDataReceived($event)">
+            </app-ecg-monitor-embedded>
+ 
+            <!-- Estado de Grabación -->
+            <div class="recording-status">
+              <div class="chart-status">
+                <span *ngIf="!isRecording" class="waiting">Esperando inicio de grabación...</span>
+                <span *ngIf="isRecording" class="recording">● GRABANDO - {{ formatTime(recordingTime) }}</span>
+              </div>
+            </div>
+ 
+            <!-- Progreso de Grabación -->
+            <div class="recording-progress" *ngIf="isRecording">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="recordingProgress"></div>
+              </div>
+              <div class="progress-text">
+                {{ recordingProgress.toFixed(0) }}% ({{ formatTime(recordingTime) }} / 01:00)
+              </div>
+            </div>
+ 
+            <!-- Controles de Grabación -->
+            <div class="recording-controls">
+              <button type="button" class="btn btn-record"
+                      (click)="startRecording()"
+                      [disabled]="!deviceConnected || isRecording">
+                Iniciar Grabación (60s)
+              </button>
+              <button type="button" class="btn btn-stop"
+                      (click)="stopRecording()"
+                      [disabled]="!isRecording">
+                Detener Grabación
+              </button>
+            </div>
+          </div>
+ 
+          <!-- Estado desconectado -->
+          <div class="no-device" *ngIf="!deviceConnected">
+            <div class="no-device-content">
+              <span class="icon">📱</span>
+              <h4>Dispositivo No Conectado</h4>
+              <p>Conecta el dispositivo ECG para comenzar la monitorización</p>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Información Doctor -->
+        <div class="info-section">
+          <h3>Información del Doctor</h3>
+          <div class="info-content">
+            <div class="info-item">
+              <span class="info-label">Doctor:</span>
+              <span class="info-value">Dr. Carlos Moncada</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">ID:</span>
+              <span class="info-value">3</span>
+            </div>
+            <div class="info-item" *ngIf="currentBPM > 0">
+              <span class="info-label">BPM Actual:</span>
+              <span class="info-value bpm-value">{{ currentBPM }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-cancel" (click)="cancel()">Cancelar</button>
+        <button type="submit" class="btn btn-create"
+                [disabled]="lecturaForm.invalid || !deviceConnected || recordingTime === 0">
+          Guardar Lectura
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+ 

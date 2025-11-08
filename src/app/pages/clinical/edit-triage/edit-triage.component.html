@@ -1,13 +1,13 @@
 <div class="edit-triage-container">
   <div class="header">
-    <h2>ACTUALIZAR TRIAGE</h2>
-    <p>Modifica la información del triage médico.</p>
+    <h2>{{ isReadOnly ? 'DETALLE DEL TRIAGE' : 'ACTUALIZAR TRIAGE' }}</h2>
+    <p>{{ isReadOnly ? 'Consulta la información registrada del triage médico.' : 'Modifica la información del triage médico.' }}</p>
   </div>
 
   <div class="form-card">
     <div class="form-group">
       <label for="appointment">Cita *</label>
-      <select id="appointment" [(ngModel)]="triage.appointment_id">
+      <select id="appointment" [(ngModel)]="triage.appointment_id" [disabled]="isReadOnly">
         <option value="">Seleccione una cita</option>
         <option *ngFor="let apt of appointments" [value]="apt.id">
           {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
@@ -23,6 +23,7 @@
           type="number"
           [(ngModel)]="triage.height_cm"
           placeholder="Ej: 170"
+          [readonly]="isReadOnly"
         />
       </div>
 
@@ -33,6 +34,7 @@
           type="number"
           [(ngModel)]="triage.weight_kg"
           placeholder="Ej: 70"
+          [readonly]="isReadOnly"
         />
       </div>
     </div>
@@ -40,21 +42,21 @@
     <div class="form-row">
       <div class="form-group checkbox-group">
         <label>
-          <input type="checkbox" [(ngModel)]="triage.smoker" />
+          <input type="checkbox" [(ngModel)]="triage.smoker" [disabled]="isReadOnly" />
           Fumador
         </label>
       </div>
 
       <div class="form-group checkbox-group">
         <label>
-          <input type="checkbox" [(ngModel)]="triage.drinker" />
+          <input type="checkbox" [(ngModel)]="triage.drinker" [disabled]="isReadOnly" />
           Bebedor
         </label>
       </div>
 
       <div class="form-group checkbox-group">
         <label>
-          <input type="checkbox" [(ngModel)]="triage.practice_sport" />
+          <input type="checkbox" [(ngModel)]="triage.practice_sport" [disabled]="isReadOnly" />
           Practica Deporte
         </label>
       </div>
@@ -67,6 +69,7 @@
         type="text"
         [(ngModel)]="triage.consult_type"
         placeholder="Ej: Control rutinario"
+        [readonly]="isReadOnly"
       />
     </div>
 
@@ -77,6 +80,7 @@
         rows="3"
         [(ngModel)]="triage.congenital_diseases"
         placeholder="Describa enfermedades congénitas..."
+        [readonly]="isReadOnly"
       ></textarea>
     </div>
 
@@ -87,6 +91,7 @@
         rows="3"
         [(ngModel)]="triage.allergies"
         placeholder="Describa alergias..."
+        [readonly]="isReadOnly"
       ></textarea>
     </div>
 
@@ -97,12 +102,13 @@
         rows="4"
         [(ngModel)]="triage.summary"
         placeholder="Resumen de la consulta..."
+        [readonly]="isReadOnly"
       ></textarea>
     </div>
 
     <div class="form-actions centered">
-      <button class="btn-save" (click)="updateTriage()">Actualizar Triage</button>
-      <button class="btn-cancel" (click)="goBack()">Cancelar</button>
+      <button class="btn-save" *ngIf="!isReadOnly" (click)="updateTriage()">Actualizar Triage</button>
+      <button class="btn-cancel" (click)="goBack()">{{ isReadOnly ? 'Cerrar' : 'Cancelar' }}</button>
     </div>
   </div>
 </div>

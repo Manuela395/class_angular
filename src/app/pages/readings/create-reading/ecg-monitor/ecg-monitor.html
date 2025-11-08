@@ -1,0 +1,27 @@
+<div class="ecg-monitor-embedded">
+  <div class="monitor-header">
+    <h4>Señal ECG en Tiempo Real</h4>
+    <div class="status-indicator" [class.connected]="isConnected">
+      {{ isConnected ? '● CONECTADO' : '○ DESCONECTADO' }}
+    </div>
+  </div>
+  
+  <div class="canvas-container">
+    <canvas #canvas width="800" height="120"></canvas>
+  </div>
+  
+  <div class="monitor-info-compact">
+    <div class="info-item">
+      <span class="label">BPM:</span>
+      <span class="value bpm">{{ bpm }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Fs:</span>
+      <span class="value">{{ fs }} Hz</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Ventana:</span>
+      <span class="value">{{ WINDOW_MS / 1000 }}s</span>
+    </div>
+  </div>
+</div>

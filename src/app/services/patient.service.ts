@@ -12,4 +12,3 @@ export class PatientService {
     return this.http.get(this.apiUrl);
   }
 }
-

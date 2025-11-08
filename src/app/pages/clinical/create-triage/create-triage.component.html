@@ -5,14 +5,31 @@
   </div>
 
   <div class="form-card">
-    <div class="form-group">
-      <label for="appointment">Cita *</label>
-      <select id="appointment" [(ngModel)]="newTriage.appointment_id">
-        <option value="">Seleccione una cita</option>
-        <option *ngFor="let apt of appointments" [value]="apt.id">
-          {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
-        </option>
-      </select>
+    <!-- Campo oculto para mantener el appointment_id -->
+    <input type="hidden" [(ngModel)]="newTriage.appointment_id" />
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="patient-name">Nombres y Apellidos</label>
+        <input
+          id="patient-name"
+          type="text"
+          [value]="selectedPatientName"
+          readonly
+          placeholder="Seleccione un paciente"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="patient-identification">Identificación del paciente</label>
+        <input
+          id="patient-identification"
+          type="text"
+          [value]="selectedPatientIdentification"
+          readonly
+          placeholder="Seleccione un paciente"
+        />
+      </div>
     </div>
 
     <div class="form-row">
@@ -38,25 +55,40 @@
     </div>
 
     <div class="form-row">
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="newTriage.smoker" />
-          Fumador
-        </label>
+      <div class="form-group">
+        <label for="smoker">Fumas</label>
+        <select id="smoker" [(ngModel)]="newTriage.smoker">
+          <option value="">Seleccione</option>
+          <option value="SI">SI</option>
+          <option value="NO">NO</option>
+        </select>
       </div>
 
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="newTriage.drinker" />
-          Bebedor
-        </label>
+      <div class="form-group">
+        <label for="drinker">Bebes</label>
+        <select id="drinker" [(ngModel)]="newTriage.drinker">
+          <option value="">Seleccione</option>
+          <option value="SI">SI</option>
+          <option value="NO">NO</option>
+        </select>
       </div>
 
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="newTriage.practice_sport" />
-          Practica Deporte
-        </label>
+      <div class="form-group">
+        <label for="practice_sport">Deporte</label>
+        <select id="practice_sport" [(ngModel)]="newTriage.practice_sport">
+          <option value="">Seleccione</option>
+          <option value="SI">SI</option>
+          <option value="NO">NO</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="allergies-dropdown">Alergias</label>
+        <select id="allergies-dropdown" [(ngModel)]="newTriage.allergies">
+          <option value="">Seleccione</option>
+          <option value="SI">SI</option>
+          <option value="NO">NO</option>
+        </select>
       </div>
     </div>
 
@@ -81,27 +113,17 @@
     </div>
 
     <div class="form-group">
-      <label for="allergies">Alergias</label>
-      <textarea
-        id="allergies"
-        rows="3"
-        [(ngModel)]="newTriage.allergies"
-        placeholder="Describa alergias..."
-      ></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="summary">Resumen</label>
+      <label for="summary">Observaciones</label>
       <textarea
         id="summary"
         rows="4"
         [(ngModel)]="newTriage.summary"
-        placeholder="Resumen de la consulta..."
+        placeholder="Observaciones de la consulta..."
       ></textarea>
     </div>
 
     <div class="form-actions centered">
-      <button class="btn-save" (click)="saveTriage()">Guardar Triage</button>
+      <button class="btn-save" (click)="saveTriage()">Crear</button>
       <button class="btn-cancel" (click)="goBack()">Cancelar</button>
     </div>
   </div>

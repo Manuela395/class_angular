@@ -15,6 +15,7 @@ import { DoctorAppointmentService } from '../../../services/doctor-appointment.s
 export class EditTriageComponent implements OnInit {
   triageId: string | null = null;
   appointments: any[] = [];
+  isReadOnly = false;
   triage: any = {
     appointment_id: '',
     smoker: false,
@@ -36,6 +37,10 @@ export class EditTriageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      this.isReadOnly = params.get('mode') === 'detalle';
+    });
+
     this.route.params.subscribe(params => {
       this.triageId = params['id'];
       this.loadTriage();
@@ -78,6 +83,9 @@ export class EditTriageComponent implements OnInit {
   }
 
   updateTriage() {
+    if (this.isReadOnly) {
+      return;
+    }
     if (this.triageId) {
       this.triageService.updateTriage(this.triageId, this.triage).subscribe({
         next: () => {

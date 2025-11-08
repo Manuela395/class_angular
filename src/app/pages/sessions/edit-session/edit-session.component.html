@@ -6,33 +6,48 @@
 
   <div class="form-card">
     <div class="form-group">
-      <label for="appointment">Cita *</label>
-      <select id="appointment" [(ngModel)]="form.appointment_id">
-        <option value="">Seleccione una cita</option>
-        <option *ngFor="let apt of appointments" [value]="apt.id">
-          {{ apt.patient?.name }} {{ apt.patient?.last_name }} - {{ apt.date_appointment }} {{ apt.hour_appointment }}
-        </option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="device">Dispositivo *</label>
-      <select id="device" [(ngModel)]="form.device_id">
-        <option value="">Seleccione un dispositivo</option>
-        <option *ngFor="let d of devices" [value]="d.id">
-          {{ d.name || d.device_id }}
-        </option>
-      </select>
+      <label for="patient">Nombres y Apellidos</label>
+      <input
+        id="patient"
+        type="text"
+        [value]="patientName"
+        readonly
+        placeholder="Se cargará automáticamente"
+      />
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label for="sampling">Frecuencia (Hz)</label>
-        <input id="sampling" type="number" [(ngModel)]="form.sampling_hz" placeholder="Ej: 500" />
+        <label for="patient-identification">Identificación del paciente</label>
+        <input
+          id="patient-identification"
+          type="text"
+          [value]="patientIdentification"
+          readonly
+          placeholder="Se cargará automáticamente"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="assigned-device">Dispositivo asignado</label>
+        <input
+          id="assigned-device"
+          type="text"
+          [value]="assignedDeviceName"
+          readonly
+          placeholder="No asignado"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sampling">Frecuencia de muestreo Hz</label>
+        <input id="sampling" type="number" [(ngModel)]="form.sampling_hz" placeholder="Ej: 250" />
       </div>
       <div class="form-group">
-        <label for="lead">Lead</label>
-        <input id="lead" type="text" [(ngModel)]="form.lead_config" placeholder="Ej: II" />
+        <label for="lead">Configuración electrodos</label>
+        <input id="lead" type="text" [(ngModel)]="form.lead_config" placeholder="Ej: DI" />
       </div>
     </div>
 

@@ -12,4 +12,3 @@ export class DoctorService {
     return this.http.get(this.apiUrl);
   }
 }
-

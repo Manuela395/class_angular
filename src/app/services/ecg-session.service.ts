@@ -27,4 +27,8 @@ export class EcgSessionService {
   updateSession(id: string, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
+
+  getEligiblePatients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/eligible-patients`);
+  }
 }

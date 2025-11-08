@@ -146,6 +146,14 @@ export const routes: Routes = [
           import('./pages/readings/readings.component')
             .then(m => m.ReadingsComponent)
       },
+      {
+        path: 'lecturas/crear',
+        loadComponent: () =>
+          import('./pages/readings/create-reading/create-reading.component')
+            .then(m => m.CreateReadingComponent)
+      },
+     
+     
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],
   },

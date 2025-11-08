@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TriageService } from '../../services/triage.service';
+import { DoctorAppointmentService } from '../../services/doctor-appointment.service';
 
 @Component({
   selector: 'app-clinical',
@@ -12,19 +13,31 @@ import { TriageService } from '../../services/triage.service';
   styleUrls: ['./clinical.component.scss']
 })
 export class ClinicalComponent implements OnInit {
-  triages: any[] = [];
+  triages: Array<{
+    id: number;
+    appointment: any;
+    hasTriage: boolean;
+    triageId: number | null;
+    clinical?: any;
+  }> = [];
   filteredTriages: any[] = [];
   filterText = '';
   openDropdownId: number | null = null;
   selectedTriage: number | null = null;
+  private readonly storageKeyTriageId = 'selected_triage_id';
+  private readonly storageKeyAppointmentId = 'selected_triage_appointment_id';
 
   constructor(
     private triageService: TriageService,
+    private doctorAppointmentService: DoctorAppointmentService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Restaurar selección persistida antes de renderizar
+    const savedId = localStorage.getItem(this.storageKeyTriageId);
+    this.selectedTriage = savedId ? Number(savedId) : null;
     this.loadTriages();
   }
 
@@ -38,16 +51,45 @@ export class ClinicalComponent implements OnInit {
   }
 
   loadTriages() {
-    this.triageService.getTriages().subscribe({
-      next: (res) => {
-        console.log('Triages loaded:', res);
-        this.triages = res.clinicals || [];
-        this.filteredTriages = [...this.triages];
-        this.cdr.detectChanges();
+    this.doctorAppointmentService.getAppointments().subscribe({
+      next: (aptRes) => {
+        const appointments = aptRes.appointments || [];
+        this.triageService.getTriages().subscribe({
+          next: (triRes) => {
+            const clinicals = triRes.clinicals || [];
+            const appointmentTriagesMap = new Map<number, any>();
+
+            clinicals.forEach((clinical: any) => {
+              const appointmentId = clinical.appointment_id || clinical.appointment?.id;
+              if (appointmentId) {
+                appointmentTriagesMap.set(Number(appointmentId), clinical);
+              }
+            });
+
+            this.triages = appointments.map((apt: any) => {
+              const clinical = appointmentTriagesMap.get(Number(apt.id));
+              return {
+                id: apt.id,
+                appointment: apt,
+                hasTriage: !!clinical,
+                triageId: clinical?.id ?? null,
+                clinical
+              };
+            });
+            this.filteredTriages = [...this.triages];
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error cargando triages:', err);
+            this.triages = (appointments || []).map((apt: any) => ({ id: apt.id, appointment: apt, hasTriage: false }));
+            this.filteredTriages = [...this.triages];
+            this.cdr.detectChanges();
+          }
+        });
       },
       error: (err) => {
-        console.error('Error cargando triages:', err);
-        alert(err.error?.error || 'Error al cargar los triages.');
+        console.error('Error cargando citas:', err);
+        alert(err.error?.error || 'Error al cargar las citas.');
       }
     });
   }
@@ -61,6 +103,16 @@ export class ClinicalComponent implements OnInit {
   }
 
   goToCreate() {
+    const savedAppointmentId = localStorage.getItem(this.storageKeyAppointmentId);
+    if (!savedAppointmentId) {
+      alert('Seleccione una cita sin triage para habilitar la creación.');
+      return;
+    }
+    const row = this.triages.find((r) => String(r.id) === String(savedAppointmentId));
+    if (row?.hasTriage) {
+      alert('La cita seleccionada ya tiene triage. Seleccione otra.');
+      return;
+    }
     this.router.navigate(['/triages/crear']);
   }
 
@@ -83,9 +135,10 @@ export class ClinicalComponent implements OnInit {
     }
   }
 
-  onSelectTriage(triageId: number) {
-    this.selectedTriage = triageId;
-    // Aquí puedes realizar lógica adicional, como emitir evento o guardar el seleccionando
+  onSelectTriage(appointmentId: number) {
+    this.selectedTriage = appointmentId;
+    localStorage.setItem(this.storageKeyTriageId, String(appointmentId));
+    localStorage.setItem(this.storageKeyAppointmentId, String(appointmentId));
   }
 
   formatDate(date: string): string {
@@ -99,14 +152,13 @@ export class ClinicalComponent implements OnInit {
     return hour;
   }
 
-  hasTriageData(triage: any): boolean {
-    return triage && (
-      triage.smoker !== null ||
-      triage.drinker !== null ||
-      triage.congenital_diseases ||
-      triage.allergies ||
-      triage.height_cm ||
-      triage.weight_kg
-    );
+  viewDetail(triageId: number | null) {
+    if (!triageId) {
+      alert('No fue posible encontrar el triage para este paciente.');
+      return;
+    }
+    this.router.navigate(['/triages/actualizar', triageId], {
+      queryParams: { mode: 'detalle' }
+    });
   }
 }
