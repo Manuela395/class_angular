@@ -1,151 +1,186 @@
 <div class="page-container">
-  <div class="page-header">
-    <div class="header-content">
-      <div class="header-text">
-        <h1>CREAR LECTURA ECG</h1>
-        <p>Formulario para realizar nuevas lecturas de electrocardiograma</p>
-      </div>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>CREAR LECTURA ECG</h1>
+      <p>Registra lecturas de electrocardiograma a partir de sesiones activas.</p>
     </div>
-  </div>
- 
-  <div class="form-container">
-    <form [formGroup]="lecturaForm" (ngSubmit)="createLectura()" class="lectura-form">
-     
-      <div class="form-section">
-        <!-- Información Básica -->
-        <div class="form-columns">
-          <div class="form-column">
-            <div class="form-group">
-              <label for="patientId" class="form-label">Paciente *</label>
-              <select id="patientId" formControlName="patientId" class="form-input">
-                <option value="">Seleccione un paciente</option>
-                <option *ngFor="let patient of patients" [value]="patient.id">
-                  {{ getFullName(patient) }} - {{ patient.identification }}
-                </option>
-              </select>
-              <div *ngIf="lecturaForm.get('patientId')?.touched && lecturaForm.get('patientId')?.invalid" class="error-message">
-                El paciente es requerido
-              </div>
-            </div>
- 
-            <div class="form-group">
-              <label for="recordCount" class="form-label">Número de Registros *</label>
-              <input type="number" id="recordCount" formControlName="recordCount" class="form-input" min="1">
-              <div *ngIf="lecturaForm.get('recordCount')?.touched && lecturaForm.get('recordCount')?.invalid" class="error-message">
-                <span *ngIf="lecturaForm.get('recordCount')?.errors?.['required']">El número de registros es requerido</span>
-                <span *ngIf="lecturaForm.get('recordCount')?.errors?.['min']">Debe ser al menos 1</span>
-              </div>
-            </div>
-          </div>
- 
-          <div class="form-column">
-            <div class="form-group">
-              <label for="observations" class="form-label">Observaciones</label>
-              <textarea id="observations" formControlName="observations" class="form-input" rows="4" placeholder="Observaciones adicionales..."></textarea>
-            </div>
-          </div>
+    <div class="hero-status" [class.connected]="deviceConnected">
+      <span>{{ deviceConnected ? 'Dispositivo conectado' : 'Dispositivo desconectado' }}</span>
+    </div>
+  </section>
+
+  <form [formGroup]="lecturaForm" (ngSubmit)="createLectura()" class="reading-form">
+    <section class="card session-card">
+      <header class="card-header">
+        <div>
+          <h2>Datos de la sesión</h2>
+          <p>Selecciona un paciente con sesión disponible y verifica la información clínica asociada.</p>
         </div>
- 
-        <!-- Control de Dispositivo ECG -->
-        <div class="device-control-section">
-          <h3>Control de Dispositivo ECG</h3>
-         
-          <div class="device-status">
-            <div class="status-indicator" [class.connected]="deviceConnected">
-              {{ deviceConnected ? '● CONECTADO' : '○ DESCONECTADO' }}
-            </div>
-           
-            <div class="device-buttons">
-              <button type="button" class="btn btn-connect" (click)="connectDevice()" [disabled]="deviceConnected">
-                Conectar Dispositivo
-              </button>
-              <button type="button" class="btn btn-disconnect" (click)="disconnectDevice()" [disabled]="!deviceConnected">
-                Desconectar
-              </button>
-            </div>
-          </div>
- 
-          <!-- Monitor ECG Integrado -->
-          <div class="ecg-integrated-container" *ngIf="deviceConnected">
-           
-            <!-- Componente ECG Monitor Embebido -->
-            <app-ecg-monitor-embedded
-              [deviceId]="'esp32-ecg-01'"
-              (dataReceived)="onEcgDataReceived($event)">
-            </app-ecg-monitor-embedded>
- 
-            <!-- Estado de Grabación -->
-            <div class="recording-status">
-              <div class="chart-status">
-                <span *ngIf="!isRecording" class="waiting">Esperando inicio de grabación...</span>
-                <span *ngIf="isRecording" class="recording">● GRABANDO - {{ formatTime(recordingTime) }}</span>
-              </div>
-            </div>
- 
-            <!-- Progreso de Grabación -->
-            <div class="recording-progress" *ngIf="isRecording">
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="recordingProgress"></div>
-              </div>
-              <div class="progress-text">
-                {{ recordingProgress.toFixed(0) }}% ({{ formatTime(recordingTime) }} / 01:00)
-              </div>
-            </div>
- 
-            <!-- Controles de Grabación -->
-            <div class="recording-controls">
-              <button type="button" class="btn btn-record"
-                      (click)="startRecording()"
-                      [disabled]="!deviceConnected || isRecording">
-                Iniciar Grabación (60s)
-              </button>
-              <button type="button" class="btn btn-stop"
-                      (click)="stopRecording()"
-                      [disabled]="!isRecording">
-                Detener Grabación
-              </button>
-            </div>
-          </div>
- 
-          <!-- Estado desconectado -->
-          <div class="no-device" *ngIf="!deviceConnected">
-            <div class="no-device-content">
-              <span class="icon">📱</span>
-              <h4>Dispositivo No Conectado</h4>
-              <p>Conecta el dispositivo ECG para comenzar la monitorización</p>
-            </div>
-          </div>
+        <div class="pill-group">
+          <span class="pill">
+            Registros: {{ lecturaForm.value.recordCount || 0 }}
+          </span>
+          <span class="pill" *ngIf="currentBPM > 0">
+            BPM actual: {{ currentBPM }}
+          </span>
         </div>
- 
-        <!-- Información Doctor -->
-        <div class="info-section">
-          <h3>Información del Doctor</h3>
-          <div class="info-content">
-            <div class="info-item">
-              <span class="info-label">Doctor:</span>
-              <span class="info-value">Dr. Carlos Moncada</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">ID:</span>
-              <span class="info-value">3</span>
-            </div>
-            <div class="info-item" *ngIf="currentBPM > 0">
-              <span class="info-label">BPM Actual:</span>
-              <span class="info-value bpm-value">{{ currentBPM }}</span>
-            </div>
+      </header>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="patientId">Nombre del paciente *</label>
+          <select
+            #patientSelect
+            id="patientId"
+            formControlName="patientId"
+            (change)="onPatientSelected(patientSelect.value)">
+            <option value="">Seleccione un paciente</option>
+            <option *ngFor="let patient of patients" [value]="patient.patient_id">
+              {{ patient.patient_name }} {{ patient.patient_last_name }}
+            </option>
+          </select>
+          <small *ngIf="lecturaForm.get('patientId')?.touched && lecturaForm.get('patientId')?.invalid">
+            El paciente es requerido
+          </small>
+        </div>
+        <div class="field">
+          <label>Identificación del paciente</label>
+          <input type="text" [value]="selectedPatient?.patient_identification || ''" readonly>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Doctor responsable</label>
+          <input type="text" [value]="doctorDisplay" placeholder="Selecciona un paciente" readonly>
+        </div>
+        <div class="field">
+          <label>Dispositivo asignado</label>
+          <input type="text" [value]="deviceDisplay" placeholder="Sin asignar" readonly>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="recordCount">Número de registros *</label>
+          <input
+            type="number"
+            id="recordCount"
+            formControlName="recordCount"
+            min="1"
+            placeholder="Ej. 2">
+          <small *ngIf="lecturaForm.get('recordCount')?.touched && lecturaForm.get('recordCount')?.invalid">
+            <span *ngIf="lecturaForm.get('recordCount')?.errors?.['required']">Indica cuántas capturas se generarán.</span>
+            <span *ngIf="lecturaForm.get('recordCount')?.errors?.['min']">Debe ser al menos 1.</span>
+          </small>
+        </div>
+        <div class="field">
+          <label>Estado de conexión</label>
+          <div class="status-chip" [class.connected]="deviceConnected">
+            <span class="dot"></span>
+            {{ deviceConnected ? 'Conectado' : 'Desconectado' }}
           </div>
         </div>
       </div>
- 
-      <!-- Acciones -->
-      <div class="form-actions">
-        <button type="button" class="btn btn-cancel" (click)="cancel()">Cancelar</button>
-        <button type="submit" class="btn btn-create"
-                [disabled]="lecturaForm.invalid || !deviceConnected || recordingTime === 0">
-          Guardar Lectura
+    </section>
+
+    <section class="card monitor-card">
+      <header class="card-header">
+        <div>
+          <h2>Monitor en vivo</h2>
+          <p>Visualiza la señal ECG y controla la grabación de la sesión.</p>
+        </div>
+        <div class="actions">
+          <button
+            type="button"
+            class="ghost-btn"
+            (click)="connectDevice()"
+            [disabled]="deviceConnected">
+            Conectar
+          </button>
+          <button
+            type="button"
+            class="ghost-btn danger"
+            (click)="disconnectDevice()"
+            [disabled]="!deviceConnected">
+            Desconectar
+          </button>
+        </div>
+      </header>
+
+      <div class="monitor-wrapper">
+        <div class="monitor-placeholder" *ngIf="!deviceConnected">
+          <div class="icon">📡</div>
+          <p>Conecta el dispositivo ECG para iniciar la transmisión en vivo.</p>
+        </div>
+
+        <div class="monitor-live" *ngIf="deviceConnected">
+          <app-ecg-monitor-embedded
+            [deviceId]="'esp32-ecg-01'"
+            (dataReceived)="onEcgDataReceived($event)">
+          </app-ecg-monitor-embedded>
+
+          <div class="recording-info">
+            <span *ngIf="!isRecording" class="state waiting">
+              Esperando inicio de grabación
+            </span>
+            <span *ngIf="isRecording" class="state recording">
+              ● Grabando · {{ formatTime(recordingTime) }}
+            </span>
+          </div>
+
+          <div class="progress" *ngIf="isRecording">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="recordingProgress"></div>
+            </div>
+            <span class="progress-label">
+              {{ recordingProgress.toFixed(0) }}% · {{ formatTime(recordingTime) }} / 01:00
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="monitor-actions">
+        <button
+          type="button"
+          class="primary-btn"
+          (click)="startRecording()"
+          [disabled]="!deviceConnected || isRecording">
+          Iniciar grabación (60s)
+        </button>
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="stopRecording()"
+          [disabled]="!isRecording">
+          Detener
         </button>
       </div>
-    </form>
-  </div>
+    </section>
+
+    <section class="card description-card">
+      <header class="card-header">
+        <div>
+          <h2>Descripción clínica</h2>
+          <p>Resume la observación del especialista para esta lectura.</p>
+        </div>
+      </header>
+      <textarea
+        id="observations"
+        rows="4"
+        formControlName="observations"
+        placeholder="La señal de ECG es normal, no se detectan tramos anormales entre intervalos.">
+      </textarea>
+    </section>
+
+    <footer class="form-actions">
+      <button type="button" class="ghost-btn" (click)="cancel()">Cancelar</button>
+      <button
+        type="submit"
+        class="primary-btn"
+        [disabled]="lecturaForm.invalid || !deviceConnected || recordingTime === 0">
+        Guardar lectura
+      </button>
+    </footer>
+  </form>
 </div>
- 

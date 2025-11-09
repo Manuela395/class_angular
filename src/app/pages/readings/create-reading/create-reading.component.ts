@@ -5,10 +5,34 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EcgReadingsService } from '../../../services/ecg-readings.service';
-import { UserService } from '../../../services/user.service';
 import { EcgSessionService } from '../../../services/ecg-session.service';
 import { EcgMonitorEmbeddedComponent } from './ecg-monitor/ecg-monitor';
  
+interface AssignedDevice {
+  id: number;
+  device_id: string;
+  name: string;
+}
+
+interface AssignedDoctor {
+  id: string;
+  name: string;
+  last_name: string;
+  identification: string;
+  email: string;
+}
+
+interface EligiblePatient {
+  patient_id: string;
+  patient_name: string;
+  patient_last_name: string;
+  patient_identification: string;
+  appointment_id: number;
+  clinical_register_id: number;
+  assigned_device: AssignedDevice | null;
+  doctor: AssignedDoctor | null;
+}
+
 @Component({
   selector: 'app-create-reading',
   standalone: true,
@@ -20,12 +44,14 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private ecgReadingsService = inject(EcgReadingsService);
-  private userService = inject(UserService);
   private ecgSessionService = inject(EcgSessionService);
  
   @ViewChild(EcgMonitorEmbeddedComponent) ecgMonitor!: EcgMonitorEmbeddedComponent;
  
-  patients: any[] = [];
+  patients: EligiblePatient[] = [];
+  selectedPatient: EligiblePatient | null = null;
+  doctorDisplay = '';
+  deviceDisplay = '';
  
   // Estados iniciales - dispositivo DESCONECTADO
   deviceConnected = false;
@@ -47,36 +73,47 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
   });
  
   ngOnInit(): void {
-    this.loadPatients();
+    this.loadEligiblePatients();
   }
  
   // Cargar pacientes REALES desde el backend
-  loadPatients(): void {
-    this.userService.getUsers().subscribe({
+  loadEligiblePatients(): void {
+    this.ecgSessionService.getEligiblePatients().subscribe({
       next: (response: any) => {
-        console.log('Respuesta de usuarios:', response);
-       
-        // Filtrar solo pacientes (role_id = 2 o role.code = 'patient')
-        if (response.success && Array.isArray(response.users)) {
-          this.patients = response.users.filter((user: any) =>
-            user.role_id === 4 || user.role?.code === 'patient'
-          );
-        } else if (Array.isArray(response)) {
-          this.patients = response.filter((user: any) =>
-            user.role_id === 4 || user.role?.code === 'patient'
-          );
+        const patients = response?.patients;
+        if (Array.isArray(patients)) {
+          this.patients = patients;
         } else {
-          console.error('Formato inesperado:', response);
           this.patients = [];
         }
-       
-        console.log('Pacientes cargados:', this.patients.length);
       },
       error: (error: any) => {
-        console.error('Error cargando usuarios:', error);
+        console.error('Error cargando pacientes elegibles:', error);
         this.patients = [];
       }
     });
+  }
+
+  onPatientSelected(patientId: string): void {
+    if (!patientId) {
+      this.selectedPatient = null;
+      this.doctorDisplay = '';
+      this.deviceDisplay = '';
+      return;
+    }
+
+    this.selectedPatient =
+      this.patients.find((patient) => patient.patient_id === patientId) || null;
+
+    const doctor = this.selectedPatient?.doctor;
+    this.doctorDisplay = doctor
+      ? `${doctor.name ?? ''} ${doctor.last_name ?? ''}`.trim()
+      : '';
+
+    const device = this.selectedPatient?.assigned_device;
+    this.deviceDisplay = device
+      ? `${device.name ?? 'Dispositivo'} · ID ${device.device_id}`
+      : 'Sin dispositivo asignado';
   }
  
   // Conectar dispositivo ECG - AHORA CON STREAMING REAL
@@ -129,22 +166,32 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       alert('Selecciona un paciente primero');
       return;
     }
+
+    if (!this.selectedPatient) {
+      alert('No encontramos la información del paciente seleccionado');
+      return;
+    }
+
+    if (!this.selectedPatient.assigned_device) {
+      alert('El paciente no tiene un dispositivo asignado en la sesión');
+      return;
+    }
  
     // TODO: Obtener appointment_id y clinical_register_id basado en el paciente
     const sessionData = {
-      appointment_id: 1, // Reemplazar con lógica real
-      clinical_register_id: 1, // Reemplazar con lógica real
-      device_id: 1, // ID del dispositivo en BD
+      appointment_id: this.selectedPatient.appointment_id,
+      clinical_register_id: this.selectedPatient.clinical_register_id,
+      device_id: this.selectedPatient.assigned_device.id,
       lead_config: 'II'
     };
  
     this.ecgSessionService.createSession(sessionData).subscribe({
       next: (response: any) => {
-        if (response.success) {
+        if (response?.ok && response?.ecg_session) {
           this.isRecording = true;
           this.recordingTime = 0;
           this.recordingProgress = 0;
-          this.currentSessionId = response.sessionId;
+          this.currentSessionId = response.ecg_session.id;
          
           this.recordingInterval = setInterval(() => {
             this.recordingTime++;
@@ -157,6 +204,8 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
           }, 1000);
          
           console.log('Grabación iniciada - Session ID:', this.currentSessionId);
+        } else {
+          alert('No fue posible iniciar la sesión ECG.');
         }
       },
       error: (error: any) => {
@@ -174,14 +223,16 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
     }
    
     // Notificar al backend que se detuvo la grabación
-    this.ecgSessionService.updateSession(String(this.currentSessionId), { status: 'stopped' }).subscribe({
-      next: (response: any) => {
-        console.log('Grabación detenida:', response);
-      },
-      error: (error: any) => {
-        console.error('Error deteniendo grabación:', error);
-      }
-    });
+    if (this.currentSessionId) {
+      this.ecgSessionService.updateSession(String(this.currentSessionId), { status: 'stopped' }).subscribe({
+        next: (response: any) => {
+          console.log('Grabación detenida:', response);
+        },
+        error: (error: any) => {
+          console.error('Error deteniendo grabación:', error);
+        }
+      });
+    }
   }
  
   // Crear lectura - AHORA GUARDA EN BD REAL
@@ -205,16 +256,17 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       // Guardar en base de datos REAL
       const readingData = {
         ecg_session_id: this.currentSessionId,
+        record_count: this.lecturaForm.value.recordCount,
         observations: this.lecturaForm.value.observations || ''
       };
       this.ecgReadingsService.createReading(readingData).subscribe({
         next: (response: any) => {
-          if (response.success) {
+          if (response?.ok) {
             console.log('Lectura guardada exitosamente:', response);
             alert('Lectura guardada exitosamente con análisis ECG');
             this.router.navigate(['/lecturas']);
           } else {
-            alert('Error guardando lectura: ' + response.message);
+            alert('Error guardando lectura: ' + (response?.message || 'Respuesta inválida'));
           }
         },
         error: (error: any) => {
@@ -233,11 +285,6 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
     this.stopRecording();
     this.disconnectDevice();
     this.router.navigate(['/lecturas']);
-  }
- 
-  // Helper methods
-  getFullName(user: any): string {
-    return `${user.name} ${user.last_name}`;
   }
  
   formatTime(seconds: number): string {
