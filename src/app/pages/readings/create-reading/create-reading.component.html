@@ -23,8 +23,19 @@
           <span class="pill" *ngIf="currentBPM > 0">
             BPM actual: {{ currentBPM }}
           </span>
+          <span
+            class="pill pill-status"
+            *ngIf="sessionStatusDisplay"
+            [class.pill-status--warning]="sessionStatusDisplay === 'DETENIDA'">
+            Sesión: {{ sessionStatusDisplay }}
+          </span>
         </div>
       </header>
+
+      <div class="empty-state" *ngIf="patients.length === 0">
+        <p>No hay pacientes con sesiones ECG activas disponibles.</p>
+        <small>Verifica que exista una sesión activa, con cita clínico y dispositivo asignado.</small>
+      </div>
 
       <div class="field-row">
         <div class="field">
@@ -33,7 +44,8 @@
             #patientSelect
             id="patientId"
             formControlName="patientId"
-            (change)="onPatientSelected(patientSelect.value)">
+            (change)="onPatientSelected(patientSelect.value)"
+            [disabled]="patients.length === 0">
             <option value="">Seleccione un paciente</option>
             <option *ngFor="let patient of patients" [value]="patient.patient_id">
               {{ patient.patient_name }} {{ patient.patient_last_name }}

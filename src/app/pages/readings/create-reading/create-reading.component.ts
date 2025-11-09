@@ -10,7 +10,7 @@ import { EcgMonitorEmbeddedComponent } from './ecg-monitor/ecg-monitor';
  
 interface AssignedDevice {
   id: number;
-  device_id: string;
+  device_id: string | number;
   name: string;
 }
 
@@ -22,7 +22,16 @@ interface AssignedDoctor {
   email: string;
 }
 
-interface EligiblePatient {
+interface ActiveSessionInfo {
+  id: number;
+  status: string | null;
+  lead_config: string | null;
+  sampling_hz: number | null;
+  device_id: number | string | null;
+  started_at: string | null;
+}
+
+interface ActivePatient {
   patient_id: string;
   patient_name: string;
   patient_last_name: string;
@@ -31,6 +40,7 @@ interface EligiblePatient {
   clinical_register_id: number;
   assigned_device: AssignedDevice | null;
   doctor: AssignedDoctor | null;
+  active_session: ActiveSessionInfo | null;
 }
 
 @Component({
@@ -48,10 +58,11 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
  
   @ViewChild(EcgMonitorEmbeddedComponent) ecgMonitor!: EcgMonitorEmbeddedComponent;
  
-  patients: EligiblePatient[] = [];
-  selectedPatient: EligiblePatient | null = null;
+  patients: ActivePatient[] = [];
+  selectedPatient: ActivePatient | null = null;
   doctorDisplay = '';
   deviceDisplay = '';
+  sessionStatusDisplay = '';
  
   // Estados iniciales - dispositivo DESCONECTADO
   deviceConnected = false;
@@ -75,20 +86,23 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.loadActivePatients();
   }
- 
-  // Cargar pacientes REALES desde el backend
+
+  // Cargar pacientes con sesión activa desde el backend
   loadActivePatients(): void {
-    this.ecgSessionService.getActiveSessionPatients().subscribe({
+    this.ecgSessionService.getActivePatients().subscribe({
       next: (response: any) => {
         const patients = response?.patients;
         if (Array.isArray(patients)) {
-          this.patients = patients;
+          this.patients = patients.map((patient: any) => ({
+            ...patient,
+            patient_id: String(patient.patient_id),
+          }));
         } else {
           this.patients = [];
         }
       },
       error: (error: any) => {
-        console.error('Error cargando pacientes elegibles:', error);
+        console.error('Error cargando pacientes con sesión activa:', error);
         this.patients = [];
       }
     });
@@ -99,6 +113,8 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       this.selectedPatient = null;
       this.doctorDisplay = '';
       this.deviceDisplay = '';
+      this.sessionStatusDisplay = '';
+      this.currentSessionId = null;
       return;
     }
 
@@ -114,6 +130,12 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
     this.deviceDisplay = device
       ? `${device.name ?? 'Dispositivo'} · ID ${device.device_id}`
       : 'Sin dispositivo asignado';
+
+    const activeSession = this.selectedPatient?.active_session ?? null;
+    this.currentSessionId = activeSession?.id ?? null;
+    this.sessionStatusDisplay = activeSession
+      ? this.mapSessionStatus(activeSession.status)
+      : 'NO DISPONIBLE';
   }
  
   // Conectar dispositivo ECG - AHORA CON STREAMING REAL
@@ -153,7 +175,7 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
     // Por ejemplo: validaciones, alerts automáticas, etc.
   }
  
-  // Iniciar grabación - AHORA CON BACKEND REAL
+  // Iniciar grabación usando la sesión activa
   startRecording(): void {
     if (!this.deviceConnected) {
       alert('Primero conecta el dispositivo ECG');
@@ -172,47 +194,41 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       return;
     }
 
+    if (!this.selectedPatient.active_session?.id) {
+      alert('El paciente seleccionado no tiene una sesión ECG activa disponible.');
+      return;
+    }
+
     if (!this.selectedPatient.assigned_device) {
       alert('El paciente no tiene un dispositivo asignado en la sesión');
       return;
     }
  
-    // TODO: Obtener appointment_id y clinical_register_id basado en el paciente
-    const sessionData = {
-      appointment_id: this.selectedPatient.appointment_id,
-      clinical_register_id: this.selectedPatient.clinical_register_id,
-      device_id: this.selectedPatient.assigned_device.id,
-      lead_config: 'II'
-    };
- 
-    this.ecgSessionService.createSession(sessionData).subscribe({
-      next: (response: any) => {
-        if (response?.ok && response?.ecg_session) {
-          this.isRecording = true;
-          this.recordingTime = 0;
-          this.recordingProgress = 0;
-          this.currentSessionId = response.ecg_session.id;
-         
-          this.recordingInterval = setInterval(() => {
-            this.recordingTime++;
-            this.recordingProgress = (this.recordingTime / 60) * 100;
-           
-            if (this.recordingTime >= 60) {
-              this.stopRecording();
-              alert('Grabación completada - 60 segundos de datos capturados');
-            }
-          }, 1000);
-         
-          console.log('Grabación iniciada - Session ID:', this.currentSessionId);
-        } else {
-          alert('No fue posible iniciar la sesión ECG.');
-        }
-      },
-      error: (error: any) => {
-        alert('Error iniciando grabación: ' + error.message);
-        console.error('Error startRecording:', error);
+    if (!this.currentSessionId) {
+      alert('No se encontró la sesión activa del paciente.');
+      return;
+    }
+
+    if (this.isRecording) {
+      return;
+    }
+
+    this.isRecording = true;
+    this.recordingTime = 0;
+    this.recordingProgress = 0;
+    this.sessionStatusDisplay = this.mapSessionStatus('recording');
+
+    this.recordingInterval = setInterval(() => {
+      this.recordingTime++;
+      this.recordingProgress = (this.recordingTime / 60) * 100;
+
+      if (this.recordingTime >= 60) {
+        this.stopRecording();
+        alert('Grabación completada - 60 segundos de datos capturados');
       }
-    });
+    }, 1000);
+
+    console.log('Grabación iniciada - Session ID:', this.currentSessionId);
   }
  
   // Detener grabación - AHORA CON BACKEND REAL
@@ -227,6 +243,7 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       this.ecgSessionService.updateSession(String(this.currentSessionId), { status: 'stopped' }).subscribe({
         next: (response: any) => {
           console.log('Grabación detenida:', response);
+          this.sessionStatusDisplay = this.mapSessionStatus('stopped');
         },
         error: (error: any) => {
           console.error('Error deteniendo grabación:', error);
@@ -254,9 +271,15 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       }
  
       // Guardar en base de datos REAL
+      const recordCount = Number(this.lecturaForm.value.recordCount ?? 0);
+      if (!Number.isFinite(recordCount) || recordCount < 1) {
+        alert('El número de registros debe ser mayor o igual a 1');
+        return;
+      }
+
       const readingData = {
         ecg_session_id: this.currentSessionId,
-        record_count: this.lecturaForm.value.recordCount,
+        record_count: recordCount,
         observations: this.lecturaForm.value.observations || ''
       };
       this.ecgReadingsService.createReading(readingData).subscribe({
@@ -291,6 +314,26 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  private mapSessionStatus(status: string | null): string {
+    if (!status) {
+      return 'ACTIVA';
+    }
+
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'recording':
+      case 'in_progress':
+        return 'ACTIVA';
+      case 'stopped':
+      case 'inactive':
+      case 'finalized':
+      case 'finalizada':
+        return 'DETENIDA';
+      default:
+        return status.toUpperCase();
+    }
   }
  
   ngOnDestroy(): void {

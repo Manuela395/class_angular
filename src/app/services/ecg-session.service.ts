@@ -32,7 +32,7 @@ export class EcgSessionService {
     return this.http.get(`${this.apiUrl}/eligible-patients`);
   }
 
-  getActiveSessionPatients(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/eligible-patients/active`);
+  getActivePatients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/active-patients`);
   }
 }

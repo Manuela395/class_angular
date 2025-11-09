@@ -94,6 +94,16 @@
   color: #12395c;
   font-size: 0.85rem;
   font-weight: 600;
+
+  &.pill-status {
+    background: rgba(39, 174, 96, 0.18);
+    color: #1a7a43;
+
+    &.pill-status--warning {
+      background: rgba(203, 67, 53, 0.18);
+      color: #a93226;
+    }
+  }
 }
 
 .field-row {
@@ -146,6 +156,25 @@
   small {
     font-size: 0.78rem;
     color: #c0392b;
+  }
+}
+
+.empty-state {
+  background: rgba(18, 57, 92, 0.05);
+  border: 1px dashed rgba(18, 57, 92, 0.2);
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: #3f536b;
+  font-size: 0.9rem;
+
+  p {
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 0.8rem;
+    color: #61738a;
   }
 }
 
