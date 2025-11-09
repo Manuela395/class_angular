@@ -31,4 +31,8 @@ export class EcgSessionService {
   getEligiblePatients(): Observable<any> {
     return this.http.get(`${this.apiUrl}/eligible-patients`);
   }
+
+  getActiveSessionPatients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/eligible-patients/active`);
+  }
 }

@@ -73,12 +73,12 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
   });
  
   ngOnInit(): void {
-    this.loadEligiblePatients();
+    this.loadActivePatients();
   }
  
   // Cargar pacientes REALES desde el backend
-  loadEligiblePatients(): void {
-    this.ecgSessionService.getEligiblePatients().subscribe({
+  loadActivePatients(): void {
+    this.ecgSessionService.getActiveSessionPatients().subscribe({
       next: (response: any) => {
         const patients = response?.patients;
         if (Array.isArray(patients)) {
