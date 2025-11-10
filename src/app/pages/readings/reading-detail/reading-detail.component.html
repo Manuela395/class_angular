@@ -1,0 +1,65 @@
+<div class="detail-container">
+  <div class="header">
+    <div>
+      <h2>Detalle Lectura ECG</h2>
+      <p>Visualización de la señal capturada durante la sesión.</p>
+    </div>
+    <button class="back-button" (click)="goBack()">← Volver</button>
+  </div>
+
+  <div *ngIf="loading" class="card loading">
+    <p>Cargando detalle de la lectura...</p>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="card error">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !errorMessage && reading">
+    <div class="card info-card">
+      <div class="info-item">
+        <span class="label">Paciente</span>
+        <span class="value">{{ patientName }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Identificación</span>
+        <span class="value">{{ reading.patient?.identification || 'N/A' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Fecha de creación</span>
+        <span class="value">{{ formatDate(reading.created_at) }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">N° de registros</span>
+        <span class="value">{{ reading.record_count }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Doctor responsable</span>
+        <span class="value">{{ doctorName }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Observaciones</span>
+        <span class="value observations">{{ reading.observations || 'Sin observaciones' }}</span>
+      </div>
+    </div>
+
+    <div class="card canvas-card">
+      <div class="canvas-header">
+        <div>
+          <h3>Señal ECG almacenada</h3>
+          <p>
+            Vista de los últimos 60 segundos registrados.
+            <span *ngIf="samples.length === 0" class="warning-text">
+              No se encontró señal asociada a esta lectura.
+            </span>
+          </p>
+        </div>
+        <span class="badge">Fs: {{ sampleRate }} Hz</span>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas #ecgCanvas aria-label="Señal ECG almacenada"></canvas>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
