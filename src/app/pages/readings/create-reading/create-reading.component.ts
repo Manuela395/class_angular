@@ -280,7 +280,7 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       const readingData = {
         ecg_session_id: this.currentSessionId,
         record_count: recordCount,
-        observations: this.lecturaForm.value.observations || ''
+        observations: this.lecturaForm.value.observations,
       };
       this.ecgReadingsService.createReading(readingData).subscribe({
         next: (response: any) => {
