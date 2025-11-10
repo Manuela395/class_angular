@@ -1,5 +1,6 @@
 // src/app/pages/readings/create-reading/create-reading.component.ts
 // Página para crear una nueva lectura ECG
+
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -8,7 +9,7 @@ import { EcgReadingsService } from '../../../services/ecg-readings.service';
 import { EcgSessionService } from '../../../services/ecg-session.service';
 import { EcgMonitorEmbeddedComponent } from './ecg-monitor/ecg-monitor';
 import { sample } from 'rxjs';
- 
+
 interface AssignedDevice {
   id: number;
   device_id: string | number;
@@ -47,7 +48,7 @@ interface ActivePatient {
 @Component({
   selector: 'app-create-reading',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EcgMonitorEmbeddedComponent], // No changes here, but for context
+  imports: [CommonModule, ReactiveFormsModule, EcgMonitorEmbeddedComponent],
   templateUrl: './create-reading.component.html',
   styleUrls: ['./create-reading.component.scss'],
 })
@@ -56,40 +57,43 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
   private router = inject(Router);
   private ecgReadingsService = inject(EcgReadingsService);
   private ecgSessionService = inject(EcgSessionService);
- 
-  @ViewChild(EcgMonitorEmbeddedComponent) ecgMonitor!: EcgMonitorEmbeddedComponent;
- 
+
+  @ViewChild(EcgMonitorEmbeddedComponent)
+  ecgMonitor!: EcgMonitorEmbeddedComponent;
+
   patients: ActivePatient[] = [];
   selectedPatient: ActivePatient | null = null;
   doctorDisplay = '';
   deviceDisplay = '';
   sessionStatusDisplay = '';
- 
-  // Estados iniciales - dispositivo DESCONECTADO
+
+  // Estado del dispositivo
   deviceConnected = false;
   isRecording = false;
   recordingTime = 0;
   recordingProgress = 0;
   private recordingInterval: any;
-  private collectedData: number[] = [];
- 
+
   // IDs para la grabación
   private currentSessionId: number | null = null;
- 
-  // Datos del ECG en tiempo real
+
+  // BPM actual
   currentBPM = 0;
- 
+
+  // buffer de datos ECG grabados
+  private collectedData: number[] = [];
+
   lecturaForm = this.fb.group({
     patientId: ['', [Validators.required]],
     recordCount: ['', [Validators.required, Validators.min(1)]],
-    observations: ['']
+    observations: [''],
   });
- 
+
   ngOnInit(): void {
     this.loadActivePatients();
   }
 
-  // Cargar pacientes con sesión activa desde el backend
+  // Cargar pacientes con sesión activa
   loadActivePatients(): void {
     this.ecgSessionService.getActivePatients().subscribe({
       next: (response: any) => {
@@ -106,7 +110,7 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       error: (error: any) => {
         console.error('Error cargando pacientes con sesión activa:', error);
         this.patients = [];
-      }
+      },
     });
   }
 
@@ -139,55 +143,53 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       ? this.mapSessionStatus(activeSession.status)
       : 'NO DISPONIBLE';
   }
- 
-  // Conectar dispositivo ECG - AHORA CON STREAMING REAL
+
+  // Conectar dispositivo ECG
   connectDevice(): void {
     this.deviceConnected = true;
-   
-    // Conectar el monitor ECG embebido
+
+    // Conectar el monitor embebido
     setTimeout(() => {
       if (this.ecgMonitor) {
         this.ecgMonitor.connect();
       }
     }, 100);
-   
-    //console.log('Dispositivo ECG conectado - Stream activo');
+
+    console.log('Dispositivo ECG conectado - Stream activo');
   }
- 
-  // Desconectar dispositivo ECG
+
   disconnectDevice(): void {
     this.deviceConnected = false;
     this.isRecording = false;
     this.stopRecording();
-   
-    // Desconectar el monitor ECG
+
     if (this.ecgMonitor) {
       this.ecgMonitor.disconnect();
     }
-   
-    //console.log('Dispositivo ECG desconectado');
+
+    console.log('Dispositivo ECG desconectado');
   }
- 
-  // Recibir datos del monitor ECG
+
+  // Recibir datos en tiempo real del monitor
   onEcgDataReceived(data: any): void {
-    //console.log('Datos ECG recibidos en CreateReadingComponent:', data);
+    this.currentBPM = data.bpm;
 
+    // Si estamos grabando, almacenar las muestras
+    if (this.isRecording && data.samples && Array.isArray(data.samples)) {
+      this.collectedData.push(...data.samples);
+    }
+  }
 
-    //console.log('Datos ECG recibidos - BPM:', this.currentBPM, data.signalQuality);
-      // Si está grabando, acumula las muestras
-   
-    // Aquí puedes usar los datos si los necesitas para algo más
-    // Por ejemplo: validaciones, alerts automáticas, etc.
-  } 
- 
-  // Iniciar grabación usando la sesión activa
+  // Iniciar grabación
   startRecording(): void {
     if (!this.deviceConnected) {
       alert('Primero conecta el dispositivo ECG');
       return;
     }
- 
-    // Obtener patientId del formulario
+
+    // Limpiar buffer previo
+    this.collectedData = [];
+
     const patientId = this.lecturaForm.get('patientId')?.value;
     if (!patientId) {
       alert('Selecciona un paciente primero');
@@ -208,7 +210,7 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       alert('El paciente no tiene un dispositivo asignado en la sesión');
       return;
     }
- 
+
     if (!this.currentSessionId) {
       alert('No se encontró la sesión activa del paciente.');
       return;
@@ -233,49 +235,49 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
       }
     }, 1000);
 
-    //console.log('Grabación iniciada - Session ID:', this.currentSessionId);
+    console.log('Grabación iniciada - Session ID:', this.currentSessionId);
   }
- 
-  // Detener grabación - AHORA CON BACKEND REAL
+
   stopRecording(): void {
     this.isRecording = false;
     if (this.recordingInterval) {
       clearInterval(this.recordingInterval);
     }
-   
-    // Notificar al backend que se detuvo la grabación
+
+    // Solo cambia el estado de la sesión
     if (this.currentSessionId) {
-      this.ecgSessionService.updateSession(String(this.currentSessionId), { status: 'stopped' }).subscribe({
-        next: (response: any) => {
-          //console.log('Grabación detenida:', response);
-          this.sessionStatusDisplay = this.mapSessionStatus('stopped');
-        },
-        error: (error: any) => {
-          console.error('Error deteniendo grabación:', error);
-        }
-      });
+      this.ecgSessionService
+        .updateSession(String(this.currentSessionId), { status: 'stopped' })
+        .subscribe({
+          next: (response: any) => {
+            this.sessionStatusDisplay = this.mapSessionStatus('stopped');
+            console.log("Datos capturados:", this.collectedData.length, "muestras");
+          },
+          error: (error: any) => {
+            console.error('Error deteniendo grabación:', error);
+          },
+        });
     }
   }
- 
-  // Crear lectura - AHORA GUARDA EN BD REAL
+
+  // Crear la lectura y guardar datos reales en BD
   createLectura(): void {
     if (this.lecturaForm.valid) {
       if (!this.deviceConnected) {
         alert('Conecta el dispositivo ECG antes de guardar');
         return;
       }
- 
+
       if (this.recordingTime === 0) {
         alert('Realiza una grabación antes de guardar');
         return;
       }
- 
+
       if (!this.currentSessionId) {
         alert('Error: No hay sesión de grabación activa');
         return;
       }
- 
-      // Guardar en base de datos REAL
+
       const recordCount = Number(this.lecturaForm.value.recordCount ?? 0);
       if (!Number.isFinite(recordCount) || recordCount < 1) {
         alert('El número de registros debe ser mayor o igual a 1');
@@ -286,15 +288,15 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
         ecg_session_id: this.currentSessionId,
         record_count: recordCount,
         observations: this.lecturaForm.value.observations,
-        data: dataAppened, //datos almacenados durante la grabación en el componente ECG Monitor por 10s
-        sample_rate: 250
+        data: this.collectedData, // Se envía la señal capturada
+        sample_rate: 250,
       };
-      console.log("readingData: ", readingData);
-      
+
+      console.log('readingData:', readingData);
+
       this.ecgReadingsService.createReading(readingData).subscribe({
         next: (response: any) => {
           if (response?.ok) {
-            //console.log('Lectura guardada exitosamente:', response);
             alert('Lectura guardada exitosamente con análisis ECG');
             this.router.navigate(['/lecturas']);
           } else {
@@ -304,25 +306,25 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
         error: (error: any) => {
           alert('Error guardando lectura: ' + error.message);
           console.error('Error createLectura:', error);
-        }
+        },
       });
- 
     } else {
       this.lecturaForm.markAllAsTouched();
     }
   }
- 
-  // Cancelar
+
   cancel(): void {
     this.stopRecording();
     this.disconnectDevice();
     this.router.navigate(['/lecturas']);
   }
- 
+
   formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   private mapSessionStatus(status: string | null): string {
@@ -344,10 +346,9 @@ export class CreateReadingComponent implements OnDestroy, OnInit {
         return status.toUpperCase();
     }
   }
- 
+
   ngOnDestroy(): void {
     this.stopRecording();
     this.disconnectDevice();
   }
 }
- 
