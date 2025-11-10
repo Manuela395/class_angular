@@ -9,7 +9,7 @@ export class DoctorAppointmentService {
   constructor(private http: HttpClient) {}
 
   getAppointments(): Observable<any> {
-    console.log('DoctorAppointmentService: Making request to:', this.apiUrl);
+    //console.log('DoctorAppointmentService: Making request to:', this.apiUrl);
     return this.http.get(this.apiUrl);
   }
 }

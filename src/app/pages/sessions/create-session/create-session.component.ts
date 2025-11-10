@@ -119,7 +119,7 @@ export class CreateSessionComponent implements OnInit {
     };
 
     // Verificar que device_id se incluya correctamente
-    console.log('Datos a enviar:', sessionData);
+    //console.log('Datos a enviar:', sessionData);
 
     this.ecgSessionService.createSession(sessionData).subscribe({
       next: () => {

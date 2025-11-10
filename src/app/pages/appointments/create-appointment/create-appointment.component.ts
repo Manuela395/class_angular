@@ -47,7 +47,7 @@ export class CreateAppointmentComponent implements OnInit {
     this.doctorService.getDoctors().subscribe({
       next: (res) => {
         this.doctors = res.doctors || [];
-        console.log('Doctors loaded:', this.doctors);
+        ////console.log('Doctors loaded:', this.doctors);
       },
       error: (err) => {
         console.error('Error cargando doctores:', err);
@@ -59,7 +59,7 @@ export class CreateAppointmentComponent implements OnInit {
     this.patientService.getPatients().subscribe({
       next: (res) => {
         this.patients = res.patients || [];
-        console.log('Patients loaded:', this.patients);
+        ////console.log('Patients loaded:', this.patients);
       },
       error: (err) => {
         console.error('Error cargando pacientes:', err);
@@ -77,7 +77,7 @@ export class CreateAppointmentComponent implements OnInit {
 
     this.appointmentService.createAppointment(this.newAppointment).subscribe({
       next: (response) => {
-        console.log('Cita creada:', response);
+        ////console.log('Cita creada:', response);
         alert('Cita creada exitosamente.');
         this.router.navigate(['/citas']);
       },

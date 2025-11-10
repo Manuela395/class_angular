@@ -9,6 +9,8 @@ export interface EcgStreamBlock {
   samples: number[];
   t?: number;
   bpm?: number; 
+  signalQuality?: string;
+  rpiks?: number[];
 }
 
 @Injectable({
@@ -28,7 +30,7 @@ export class EcgStreamService {
     const baseUrl = 'http://localhost:4000/api';
     const url = `${baseUrl}/ecgstream/stream${deviceId ? `?device_id=${encodeURIComponent(deviceId)}` : ''}`;
 
-    console.log('🔄 Conectando a ECG Stream:', url);
+    //console.log('🔄 Conectando a ECG Stream:', url);
 
     this.disconnect();
 
@@ -51,13 +53,13 @@ export class EcgStreamService {
       
       // Reconexión automática después de 2 segundos
       this.reconnectTimeout = setTimeout(() => {
-        console.log('🔄 Reconectando ECG Stream...');
+        //console.log('🔄 Reconectando ECG Stream...');
         this.connect(deviceId);
       }, 2000);
     };
 
     this.eventSource.onopen = () => {
-      console.log('✅ ECG Stream conectado');
+      //console.log('✅ ECG Stream conectado');
     };
   }
 
@@ -70,7 +72,7 @@ export class EcgStreamService {
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = undefined;
-      console.log('🔌 ECG Stream desconectado');
+      //console.log('🔌 ECG Stream desconectado');
     }
   }
 

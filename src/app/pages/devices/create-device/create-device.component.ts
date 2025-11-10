@@ -31,7 +31,7 @@ export class CreateDeviceComponent {
 
     this.deviceService.createDevice(this.newDevice).subscribe({
       next: (response) => {
-        console.log('Dispositivo creado:', response);
+        //console.log('Dispositivo creado:', response);
         alert('Dispositivo creado exitosamente.');
         this.router.navigate(['/dispositivos']);
       },

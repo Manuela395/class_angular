@@ -40,7 +40,7 @@ export class AppointmentsComponent implements OnInit {
   loadAppointments() {
     this.appointmentService.getAppointments().subscribe({
       next: (res) => {
-        console.log('Appointments loaded:', res);
+        ////console.log('Appointments loaded:', res);
         this.appointments = res.appointments || [];
         this.filteredAppointments = [...this.appointments];
         this.cdr.detectChanges();

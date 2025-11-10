@@ -42,7 +42,7 @@ export class DevicesComponent implements OnInit {
     this.loading = true;
     this.deviceService.getDevices().subscribe({
       next: (res) => {
-        console.log('Devices loaded:', res);
+        //console.log('Devices loaded:', res);
         this.devices = res.devices || [];
         this.filteredDevices = [...this.devices];
         this.loading = false;

@@ -51,7 +51,7 @@ export class CreateUserComponent implements OnInit {
 
     this.userService.createUser(this.newUser).subscribe({
       next: (response) => {
-        console.log('Usuario creado:', response);
+        //console.log('Usuario creado:', response);
         alert('Usuario creado exitosamente.');
         this.router.navigate(['/usuarios']);
       },

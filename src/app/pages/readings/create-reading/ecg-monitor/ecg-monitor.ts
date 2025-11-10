@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject, Input, Out
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { EcgStreamService, EcgStreamBlock } from '../../../../services/ecg-stream.service';
+import { sign } from 'chart.js/helpers';
 
 @Component({
   selector: 'app-ecg-monitor-embedded',
@@ -86,7 +87,10 @@ export class EcgMonitorEmbeddedComponent implements OnInit, OnDestroy {
     this.dataReceived.emit({
       bpm: this.bpm,
       samples: block.samples,
-      fs: this.fs
+      fs: this.fs,
+      signalQuality: block.signalQuality || 'unknown',
+      rpiks: block.rpiks || []
+      
     });
 
     const dt_ms = 1000 / this.fs;

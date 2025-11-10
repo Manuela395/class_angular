@@ -28,11 +28,11 @@ export class Sidebar implements OnInit {
   
   // Debug: Log para ver la estructura del usuario
   ngOnInit(): void {
-    console.log('Sidebar - User object:', this.user);
-    console.log('Sidebar - User role:', this.userRole);
-    console.log('Sidebar - isAdmin()', this.isAdmin());
-    console.log('Sidebar - isAdminAux()', this.isAdminAux());
-    console.log('Sidebar - isDoctor()', this.isDoctor());
+    //console.log('Sidebar - User object:', this.user);
+    //console.log('Sidebar - User role:', this.userRole);
+    //console.log('Sidebar - isAdmin()', this.isAdmin());
+    //console.log('Sidebar - isAdminAux()', this.isAdminAux());
+    //console.log('Sidebar - isDoctor()', this.isDoctor());
   }
   
   // Verificar si el usuario tiene un rol específico

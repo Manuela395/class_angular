@@ -39,9 +39,9 @@ export class CreateTriageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('CreateTriageComponent initialized');
-    console.log('Token:', localStorage.getItem('token'));
-    console.log('User:', localStorage.getItem('user'));
+    //console.log('CreateTriageComponent initialized');
+    //console.log('Token:', localStorage.getItem('token'));
+    //console.log('User:', localStorage.getItem('user'));
     
     // Validación: No permitir crear triage si no se ha seleccionado un paciente
     const savedAppointmentId = localStorage.getItem(this.storageKeyAppointmentId);
@@ -78,12 +78,12 @@ export class CreateTriageComponent implements OnInit {
   }
 
   loadAppointments() {
-    console.log('Loading appointments...');
+    //console.log('Loading appointments...');
     this.doctorAppointmentService.getAppointments().subscribe({
       next: (res) => {
-        console.log('Appointments loaded successfully:', res);
+        //console.log('Appointments loaded successfully:', res);
         this.appointments = res.appointments || [];
-        console.log('Appointments array:', this.appointments);
+        //console.log('Appointments array:', this.appointments);
         // Construir opciones de pacientes a partir de citas
         const map: Record<string, { label: string; appointmentId: string; date?: string }> = {};
         for (const apt of this.appointments) {
@@ -139,7 +139,7 @@ export class CreateTriageComponent implements OnInit {
 
     this.triageService.createTriage(triageData).subscribe({
       next: (response) => {
-        console.log('Triage creado:', response);
+        //console.log('Triage creado:', response);
         alert('Triage creado exitosamente.');
         // Limpiar la selección del localStorage después de crear
         localStorage.removeItem(this.storageKeyAppointmentId);
