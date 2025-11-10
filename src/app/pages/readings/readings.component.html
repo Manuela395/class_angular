@@ -26,7 +26,7 @@
       <p>Cargando lecturas...</p>
     </div>
 
-    <table *ngIf="!loading && !errorMessage && hasActiveSessions">
+    <table *ngIf="!loading && !errorMessage">
       <thead>
         <tr>
           <th>Paciente</th>
@@ -39,11 +39,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let reading of filteredReadings">
-          <td>{{ reading.patient_name || 'N/A' }}</td>
-          <td>{{ reading.patient_identification || 'N/A' }}</td>
+          <td>{{ reading.patientName }}</td>
+          <td>{{ reading.patientIdentification }}</td>
           <td>{{ formatDate(reading.createdAt) }}</td>
-          <td>{{ reading.records_count || 0 }}</td>
-          <td>{{ reading.doctor_name || 'N/A' }}</td>
+          <td>{{ reading.recordCount }}</td>
+          <td>{{ reading.doctorName }}</td>
           <td class="actions-cell">
             <button class="detail-btn" (click)="goToDetail(reading.id)" title="Ver detalle">
               👁️
@@ -57,5 +57,4 @@
     </table>
   </div>
 </div>
-
 

@@ -3,7 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EcgReadingsService } from '../../services/ecg-readings.service';
-import { EcgSessionService } from '../../services/ecg-session.service';
+
+interface EcgReadingView {
+  id: number;
+  patientName: string;
+  patientIdentification: string;
+  createdAt: string;
+  recordCount: number;
+  doctorName: string;
+}
 
 @Component({
   selector: 'app-readings',
@@ -13,42 +21,20 @@ import { EcgSessionService } from '../../services/ecg-session.service';
   styleUrls: ['./readings.component.scss']
 })
 export class ReadingsComponent implements OnInit {
-  readings: any[] = [];
-  filteredReadings: any[] = [];
+  readings: EcgReadingView[] = [];
+  filteredReadings: EcgReadingView[] = [];
   filterText = '';
   loading = false;
-  hasActiveSessions = false;
   errorMessage: string | null = null;
 
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private ecgReadingsService: EcgReadingsService,
-    private ecgSessionService: EcgSessionService
+    private ecgReadingsService: EcgReadingsService
   ) {}
 
   ngOnInit(): void {
-    this.checkActiveSessions();
-  }
-
-  checkActiveSessions() {
-    // Verificar si hay sesiones activas antes de cargar lecturas
-    this.ecgSessionService.getSessions().subscribe({
-      next: (res) => {
-        const sessions = res.ecg_sessions || [];
-        this.hasActiveSessions = sessions.length > 0;
-        
-        if (this.hasActiveSessions) {
-          this.loadReadings();
-        } else {
-          this.errorMessage = 'No se puede acceder a las lecturas ECG porque no existe una sesión activa.';
-        }
-      },
-      error: (err) => {
-        console.error('Error verificando sesiones:', err);
-        this.errorMessage = 'Error al verificar sesiones activas.';
-      }
-    });
+    this.loadReadings();
   }
 
   loadReadings() {
@@ -57,9 +43,17 @@ export class ReadingsComponent implements OnInit {
     
     this.ecgReadingsService.getReadings().subscribe({
       next: (res) => {
-        // El backend devuelve: { ok: true, readings: [...] }
-        this.readings = res.readings || [];
-        this.filteredReadings = [...this.readings];
+        const items: EcgReadingView[] = (res.readings || []).map((reading: any) => ({
+          id: reading.id,
+          patientName: this.composeFullName(reading.patient?.name, reading.patient?.last_name),
+          patientIdentification: reading.patient?.identification || 'N/A',
+          createdAt: reading.created_at,
+          recordCount: reading.record_count ?? 0,
+          doctorName: this.composeFullName(reading.doctor?.name, reading.doctor?.last_name),
+        }));
+
+        this.readings = items;
+        this.filteredReadings = [...items];
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -74,11 +68,11 @@ export class ReadingsComponent implements OnInit {
 
   applyFilter() {
     const text = this.filterText.toLowerCase();
-    this.filteredReadings = this.readings.filter((r: any) => {
+    this.filteredReadings = this.readings.filter((r) => {
       return (
-        (r.patient_name || '').toLowerCase().includes(text) ||
-        (r.patient_identification || '').toLowerCase().includes(text) ||
-        (r.doctor_name || '').toLowerCase().includes(text)
+        r.patientName.toLowerCase().includes(text) ||
+        r.patientIdentification.toLowerCase().includes(text) ||
+        r.doctorName.toLowerCase().includes(text)
       );
     });
   }
@@ -99,5 +93,10 @@ export class ReadingsComponent implements OnInit {
     } catch {
       return dateString;
     }
+  }
+
+  private composeFullName(name?: string, lastName?: string): string {
+    const full = `${name || ''} ${lastName || ''}`.trim();
+    return full.length > 0 ? full : 'N/A';
   }
 }
