@@ -16,6 +16,30 @@
   </div>
 
   <ng-container *ngIf="!loading && !errorMessage && reading">
+    <div class="card navigation-card" *ngIf="totalRecords > 0">
+      <div class="navigation-controls">
+        <button
+          class="nav-button"
+          type="button"
+          (click)="goToPrevious()"
+          [disabled]="!canGoPrevious"
+          aria-label="Ir al registro anterior"
+        >
+          ⏪
+        </button>
+        <span class="navigation-label">{{ navigationLabel }}</span>
+        <button
+          class="nav-button"
+          type="button"
+          (click)="goToNext()"
+          [disabled]="!canGoNext"
+          aria-label="Ir al siguiente registro"
+        >
+          ⏩
+        </button>
+      </div>
+    </div>
+
     <div class="card info-card">
       <div class="info-item">
         <span class="label">Paciente</span>
@@ -31,7 +55,7 @@
       </div>
       <div class="info-item">
         <span class="label">N° de registros</span>
-        <span class="value">{{ reading.record_count }}</span>
+        <span class="value">{{ totalRecords }}</span>
       </div>
       <div class="info-item">
         <span class="label">Doctor responsable</span>

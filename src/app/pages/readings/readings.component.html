@@ -38,14 +38,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let reading of filteredReadings">
-          <td>{{ reading.patientName }}</td>
-          <td>{{ reading.patientIdentification }}</td>
-          <td>{{ formatDate(reading.createdAt) }}</td>
-          <td>{{ reading.recordCount }}</td>
-          <td>{{ reading.doctorName }}</td>
+        <tr *ngFor="let group of filteredReadings">
+          <td>{{ group.patientName }}</td>
+          <td>{{ group.patientIdentification }}</td>
+          <td>{{ formatDate(group.createdAt) }}</td>
+          <td>{{ group.recordCount }}</td>
+          <td>{{ group.doctorName }}</td>
           <td class="actions-cell">
-            <button class="detail-btn" (click)="goToDetail(reading.id)" title="Ver detalle">
+            <button class="detail-btn" (click)="goToDetail(group)" title="Ver detalle">
               👁️
             </button>
           </td>

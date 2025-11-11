@@ -26,6 +26,7 @@ export class EditUserComponent implements OnInit {
     password: '',
     roles: ['pac']
   };
+  maxBirthdate: string = this.getTodayAsString();
 
   constructor(
     private userService: UserService,
@@ -79,6 +80,11 @@ export class EditUserComponent implements OnInit {
       return;
     }
 
+    if (this.isFutureDate(this.user.birthdate)) {
+      alert('La fecha de nacimiento no puede ser una fecha futura.');
+      return;
+    }
+
     if (this.userId) {
       this.userService.updateUser(this.userId, this.user).subscribe({
         next: () => {
@@ -95,6 +101,20 @@ export class EditUserComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/usuarios']);
+  }
+
+  private getTodayAsString(): string {
+    const today = new Date();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${today.getFullYear()}-${month}-${day}`;
+  }
+
+  private isFutureDate(value: string): boolean {
+    if (!value) {
+      return false;
+    }
+    return value > this.maxBirthdate;
   }
 }
 

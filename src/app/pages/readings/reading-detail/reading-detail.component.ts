@@ -4,11 +4,13 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EcgReadingsService } from '../../../services/ecg-readings.service';
+import { Subscription } from 'rxjs';
 
 interface ReadingDetail {
   id: number;
@@ -38,7 +40,7 @@ interface ReadingDetail {
   templateUrl: './reading-detail.component.html',
   styleUrls: ['./reading-detail.component.scss'],
 })
-export class ReadingDetailComponent implements AfterViewInit, OnDestroy {
+export class ReadingDetailComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('ecgCanvas') ecgCanvas?: ElementRef<HTMLCanvasElement>;
 
   loading = true;
@@ -46,17 +48,18 @@ export class ReadingDetailComponent implements AfterViewInit, OnDestroy {
   reading: ReadingDetail | null = null;
   samples: number[] = [];
   sampleRate = 250;
+  readingIds: number[] = [];
+  currentIndex = 0;
 
   private resizeObserver?: ResizeObserver;
+  private routeSub?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly ecgReadingsService: EcgReadingsService,
     private readonly cdr: ChangeDetectorRef
-  ) {
-    this.loadReading();
-  }
+  ) {}
 
   ngAfterViewInit(): void {
     if (this.reading && this.samples.length > 0) {
@@ -64,8 +67,17 @@ export class ReadingDetailComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  ngOnInit(): void {
+    this.initializeNavigationState();
+    this.routeSub = this.route.paramMap.subscribe((params) => {
+      const readingId = params.get('id');
+      this.loadReading(readingId);
+    });
+  }
+
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
+    this.routeSub?.unsubscribe();
   }
 
   get patientName(): string {
@@ -97,13 +109,46 @@ export class ReadingDetailComponent implements AfterViewInit, OnDestroy {
     this.router.navigate(['/lecturas']);
   }
 
-  private loadReading(): void {
-    const readingId = this.route.snapshot.paramMap.get('id');
+  get totalRecords(): number {
+    if (this.readingIds.length > 0) {
+      return this.readingIds.length;
+    }
+    return this.reading ? 1 : 0;
+  }
+
+  get navigationLabel(): string {
+    if (this.totalRecords === 0) {
+      return '';
+    }
+    return `Registro ${this.currentIndex + 1} de ${this.totalRecords}`;
+  }
+
+  get canGoPrevious(): boolean {
+    return this.currentIndex > 0;
+  }
+
+  get canGoNext(): boolean {
+    return this.currentIndex < this.totalRecords - 1;
+  }
+
+  goToPrevious(): void {
+    if (!this.canGoPrevious) return;
+    this.navigateToIndex(this.currentIndex - 1);
+  }
+
+  goToNext(): void {
+    if (!this.canGoNext) return;
+    this.navigateToIndex(this.currentIndex + 1);
+  }
+
+  private loadReading(readingId: string | null): void {
     if (!readingId) {
       this.errorMessage = 'Lectura no encontrada.';
       this.loading = false;
       return;
     }
+
+    this.updateCurrentIndex(readingId);
 
     this.ecgReadingsService.getReadingById(readingId).subscribe({
       next: (res) => {
@@ -132,6 +177,60 @@ export class ReadingDetailComponent implements AfterViewInit, OnDestroy {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private navigateToIndex(index: number): void {
+    const targetId = this.readingIds[index];
+    if (!targetId) {
+      return;
+    }
+
+    this.router.navigate(['/lecturas/detalle', targetId], {
+      queryParams: { ids: this.readingIds.join(',') },
+      state: { readingIds: this.readingIds },
+    });
+  }
+
+  private initializeNavigationState(): void {
+    const navState = (this.router.getCurrentNavigation()?.extras.state ?? {}) as {
+      readingIds?: number[];
+    };
+    const historyState = (window.history.state ?? {}) as { readingIds?: number[] };
+    const queryIds = this.route.snapshot.queryParamMap.get('ids');
+
+    const idsFromState = Array.isArray(navState.readingIds)
+      ? navState.readingIds
+      : Array.isArray(historyState.readingIds)
+      ? historyState.readingIds
+      : [];
+
+    const idsFromQuery = this.parseIdList(queryIds);
+
+    const sourceIds = idsFromState.length ? idsFromState : idsFromQuery;
+
+    this.readingIds = sourceIds.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0);
+  }
+
+  private parseIdList(value: string | null): number[] {
+    if (!value) return [];
+    return value
+      .split(',')
+      .map((part) => Number(part.trim()))
+      .filter((num) => Number.isInteger(num) && num > 0);
+  }
+
+  private updateCurrentIndex(readingId: string): void {
+    const numericId = Number(readingId);
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      this.currentIndex = 0;
+      return;
+    }
+
+    if (!this.readingIds.includes(numericId)) {
+      this.readingIds = [...this.readingIds, numericId];
+    }
+
+    this.currentIndex = Math.max(this.readingIds.indexOf(numericId), 0);
   }
 
   private extractSamples(raw: ReadingDetail['data']): number[] {

@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EcgReadingsService } from '../../services/ecg-readings.service';
 
-interface EcgReadingView {
-  id: number;
+interface EcgReadingGroup {
   patientName: string;
   patientIdentification: string;
   createdAt: string;
   recordCount: number;
   doctorName: string;
+  readingIds: number[];
 }
 
 @Component({
@@ -21,8 +21,8 @@ interface EcgReadingView {
   styleUrls: ['./readings.component.scss']
 })
 export class ReadingsComponent implements OnInit {
-  readings: EcgReadingView[] = [];
-  filteredReadings: EcgReadingView[] = [];
+  readings: EcgReadingGroup[] = [];
+  filteredReadings: EcgReadingGroup[] = [];
   filterText = '';
   loading = false;
   errorMessage: string | null = null;
@@ -43,14 +43,59 @@ export class ReadingsComponent implements OnInit {
     
     this.ecgReadingsService.getReadings().subscribe({
       next: (res) => {
-        const items: EcgReadingView[] = (res.readings || []).map((reading: any) => ({
-          id: reading.id,
-          patientName: this.composeFullName(reading.patient?.name, reading.patient?.last_name),
-          patientIdentification: reading.patient?.identification || 'N/A',
-          createdAt: reading.created_at,
-          recordCount: reading.record_count ?? 0,
-          doctorName: this.composeFullName(reading.doctor?.name, reading.doctor?.last_name),
-        }));
+        const grouped = new Map<string, EcgReadingGroup>();
+
+        (res.readings || []).forEach((reading: any) => {
+          const patientName = this.composeFullName(reading.patient?.name, reading.patient?.last_name);
+          const patientIdentification = reading.patient?.identification || 'N/A';
+          const doctorName = this.composeFullName(reading.doctor?.name, reading.doctor?.last_name);
+          const createdAt: string = reading.created_at;
+          const dateKey = this.formatDate(createdAt);
+          const key = `${patientIdentification}__${dateKey}`;
+          const readingId = Number(reading.id);
+
+          if (!grouped.has(key)) {
+            grouped.set(key, {
+              patientName,
+              patientIdentification,
+              createdAt,
+              recordCount: 0,
+              doctorName,
+              readingIds: [],
+            });
+          }
+
+          const group = grouped.get(key)!;
+          if (!Number.isNaN(readingId)) {
+            group.readingIds.push(readingId);
+          }
+
+          // Keep the most recent creation timestamp for ordering purposes
+          if (group.createdAt && createdAt) {
+            const currentTime = new Date(group.createdAt).getTime();
+            const incomingTime = new Date(createdAt).getTime();
+            if (!Number.isNaN(incomingTime) && incomingTime > currentTime) {
+              group.createdAt = createdAt;
+            }
+          } else if (createdAt) {
+            group.createdAt = createdAt;
+          }
+
+          if (group.doctorName === 'N/A' && doctorName !== 'N/A') {
+            group.doctorName = doctorName;
+          }
+
+          group.recordCount = group.readingIds.length;
+        });
+
+        const items = Array.from(grouped.values()).sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          if (Number.isNaN(dateA) || Number.isNaN(dateB)) {
+            return 0;
+          }
+          return dateB - dateA;
+        });
 
         this.readings = items;
         this.filteredReadings = [...items];
@@ -72,13 +117,23 @@ export class ReadingsComponent implements OnInit {
       return (
         r.patientName.toLowerCase().includes(text) ||
         r.patientIdentification.toLowerCase().includes(text) ||
-        r.doctorName.toLowerCase().includes(text)
+        r.doctorName.toLowerCase().includes(text) ||
+        this.formatDate(r.createdAt).includes(text)
       );
     });
   }
 
-  goToDetail(readingId: number) {
-    this.router.navigate(['/lecturas/detalle', readingId]);
+  goToDetail(group: EcgReadingGroup) {
+    const firstReadingId = group.readingIds[0];
+    if (!firstReadingId) {
+      return;
+    }
+
+    const idsParam = group.readingIds.join(',');
+    this.router.navigate(['/lecturas/detalle', firstReadingId], {
+      queryParams: { ids: idsParam },
+      state: { readingIds: group.readingIds }
+    });
   }
 
   openCreate() {

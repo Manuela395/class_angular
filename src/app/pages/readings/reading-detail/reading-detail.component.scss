@@ -47,6 +47,47 @@
     padding: 24px;
   }
 
+  .navigation-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .navigation-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .nav-button {
+        border: none;
+        background-color: #1b3b5a;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+
+        &:hover:not(:disabled) {
+          background-color: #164164;
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          background-color: #cbd5f5;
+          cursor: not-allowed;
+          color: #6b7280;
+        }
+      }
+
+      .navigation-label {
+        font-weight: 600;
+        color: #1f2937;
+        letter-spacing: 0.02em;
+      }
+    }
+  }
+
   .loading,
   .error {
     text-align: center;
