@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EcgReadingsService } from '../../services/ecg-readings.service';
 
+interface ReadingEntry {
+  id: number;
+  createdAt: string | null;
+}
+
 interface EcgReadingGroup {
   patientName: string;
   patientIdentification: string;
@@ -43,58 +48,81 @@ export class ReadingsComponent implements OnInit {
     
     this.ecgReadingsService.getReadings().subscribe({
       next: (res) => {
-        const grouped = new Map<string, EcgReadingGroup>();
+        const grouped = new Map<
+          string,
+          {
+            group: EcgReadingGroup;
+            entries: ReadingEntry[];
+          }
+        >();
 
         (res.readings || []).forEach((reading: any) => {
           const patientName = this.composeFullName(reading.patient?.name, reading.patient?.last_name);
           const patientIdentification = reading.patient?.identification || 'N/A';
           const doctorName = this.composeFullName(reading.doctor?.name, reading.doctor?.last_name);
-          const createdAt: string = reading.created_at;
+          const createdAt: string | null = reading.created_at ?? null;
           const dateKey = this.formatDate(createdAt);
           const key = `${patientIdentification}__${dateKey}`;
           const readingId = Number(reading.id);
 
           if (!grouped.has(key)) {
             grouped.set(key, {
-              patientName,
-              patientIdentification,
-              createdAt,
-              recordCount: 0,
-              doctorName,
-              readingIds: [],
+              group: {
+                patientName,
+                patientIdentification,
+                createdAt: createdAt ?? '',
+                recordCount: 0,
+                doctorName,
+                readingIds: [],
+              },
+              entries: [],
             });
           }
 
-          const group = grouped.get(key)!;
-          if (!Number.isNaN(readingId)) {
-            group.readingIds.push(readingId);
-          }
+          const groupData = grouped.get(key)!;
+          const entry: ReadingEntry = {
+            id: Number.isNaN(readingId) ? 0 : readingId,
+            createdAt,
+          };
 
-          // Keep the most recent creation timestamp for ordering purposes
-          if (group.createdAt && createdAt) {
-            const currentTime = new Date(group.createdAt).getTime();
-            const incomingTime = new Date(createdAt).getTime();
-            if (!Number.isNaN(incomingTime) && incomingTime > currentTime) {
-              group.createdAt = createdAt;
-            }
-          } else if (createdAt) {
-            group.createdAt = createdAt;
-          }
+          groupData.entries.push(entry);
 
-          if (group.doctorName === 'N/A' && doctorName !== 'N/A') {
-            group.doctorName = doctorName;
+          if (groupData.group.doctorName === 'N/A' && doctorName !== 'N/A') {
+            groupData.group.doctorName = doctorName;
           }
-
-          group.recordCount = group.readingIds.length;
         });
 
-        const items = Array.from(grouped.values()).sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          if (Number.isNaN(dateA) || Number.isNaN(dateB)) {
-            return 0;
-          }
-          return dateB - dateA;
+        const items = Array.from(grouped.values())
+          .map(({ group, entries }) => {
+            const sortedEntries = entries
+              .filter((entry) => entry.id > 0)
+              .sort((a, b) => {
+                const timeA = a.createdAt ? new Date(a.createdAt).getTime() : Number.NEGATIVE_INFINITY;
+                const timeB = b.createdAt ? new Date(b.createdAt).getTime() : Number.NEGATIVE_INFINITY;
+                return timeA - timeB;
+              });
+
+            group.readingIds = sortedEntries.map((entry) => entry.id);
+            group.recordCount = group.readingIds.length;
+
+            if (sortedEntries.length > 0) {
+              const latestEntry = sortedEntries[sortedEntries.length - 1];
+              if (latestEntry.createdAt) {
+                group.createdAt = latestEntry.createdAt;
+              }
+            }
+
+            return group;
+          })
+          .sort((a, b) => {
+            const dateAValue = Number.isNaN(new Date(a.createdAt).getTime())
+              ? Number.NEGATIVE_INFINITY
+              : new Date(a.createdAt).getTime();
+            const dateBValue = Number.isNaN(new Date(b.createdAt).getTime())
+              ? Number.NEGATIVE_INFINITY
+              : new Date(b.createdAt).getTime();
+
+            return dateBValue - dateAValue;
         });
 
         this.readings = items;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,7 +22,8 @@ export class EditDeviceComponent implements OnInit {
   constructor(
     private deviceService: DeviceService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +44,7 @@ export class EditDeviceComponent implements OnInit {
               device_id: device.device_id || '',
               firmware: device.firmware || ''
             };
+            this.cdr.detectChanges();
           }
         },
         error: (err: any) => {

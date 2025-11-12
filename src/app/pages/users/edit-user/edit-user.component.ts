@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -32,7 +32,8 @@ export class EditUserComponent implements OnInit {
     private userService: UserService,
     private roleService: RoleService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +68,7 @@ export class EditUserComponent implements OnInit {
               password: '',
               roles: [user.role?.code || 'pac']
             };
+            this.cdr.detectChanges();
           }
         },
         error: (err: any) => console.error('Error cargando usuario:', err)

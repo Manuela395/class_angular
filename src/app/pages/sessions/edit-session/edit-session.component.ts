@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,7 +28,8 @@ export class EditSessionComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ecgSessionService: EcgSessionService
+    private ecgSessionService: EcgSessionService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +74,7 @@ export class EditSessionComponent implements OnInit {
           sampling_hz: s.sampling_hz ?? null,
           lead_config: s.lead_config || ''
         };
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error cargando sesión:', err);

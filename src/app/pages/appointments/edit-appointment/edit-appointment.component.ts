@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -32,7 +32,8 @@ export class EditAppointmentComponent implements OnInit {
     private doctorService: DoctorService,
     private patientService: PatientService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -82,6 +83,7 @@ export class EditAppointmentComponent implements OnInit {
               place: apt.place || '',
               notes: apt.notes || ''
             };
+            this.cdr.detectChanges();
           }
         },
         error: (err) => console.error('Error cargando cita:', err)

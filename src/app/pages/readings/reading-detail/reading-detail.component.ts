@@ -208,7 +208,10 @@ export class ReadingDetailComponent implements AfterViewInit, OnInit, OnDestroy 
 
     const sourceIds = idsFromState.length ? idsFromState : idsFromQuery;
 
-    this.readingIds = sourceIds.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0);
+    this.readingIds = sourceIds
+      .map((value) => Number(value))
+      .filter((value) => Number.isInteger(value) && value > 0)
+      .sort((a, b) => a - b);
   }
 
   private parseIdList(value: string | null): number[] {
@@ -227,7 +230,7 @@ export class ReadingDetailComponent implements AfterViewInit, OnInit, OnDestroy 
     }
 
     if (!this.readingIds.includes(numericId)) {
-      this.readingIds = [...this.readingIds, numericId];
+      this.readingIds = [...this.readingIds, numericId].sort((a, b) => a - b);
     }
 
     this.currentIndex = Math.max(this.readingIds.indexOf(numericId), 0);

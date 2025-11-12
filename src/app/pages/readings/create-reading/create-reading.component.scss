@@ -408,3 +408,47 @@
     gap: 16px;
   }
 }
+
+@media (max-width: 768px) {
+  .form-section {
+    padding: 16px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* === Uniformar tamaño de campos e inputs === */
+.field input,
+.field select,
+.field textarea {
+  height: 48px; /* Ajusta este valor según tu gusto (48px–52px se ve bien) */
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+/* Los textarea pueden ser más altos, así que solo afectamos si son de una línea */
+.field textarea {
+  height: auto;
+  min-height: 120px;
+}
+
+/* === Uniformar tamaño de botones === */
+.ghost-btn,
+.primary-btn,
+.secondary-btn {
+  min-height: 48px; /* Igual que los inputs */
+  padding: 0 18px; /* Centramos texto sin afectar bordes */
+  box-sizing: border-box;
+}
+
+/* En los formularios con grid, que los campos se alineen bien */
+.field-row {
+  align-items: stretch; /* Hace que todos los campos tengan la misma altura visual */
+}

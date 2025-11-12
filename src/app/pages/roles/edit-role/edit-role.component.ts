@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,7 +21,8 @@ export class EditRoleComponent implements OnInit {
   constructor(
     private roleService: RoleService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +40,7 @@ export class EditRoleComponent implements OnInit {
           const role = rolesData?.find((r: any) => r.id === this.roleId);
           if (role) {
             this.role = { name: role.name, code: role.code };
+            this.cdr.detectChanges();
           }
         },
         error: (err: any) => console.error('Error cargando rol:', err)

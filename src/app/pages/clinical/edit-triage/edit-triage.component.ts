@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -33,7 +33,8 @@ export class EditTriageComponent implements OnInit {
     private triageService: TriageService,
     private doctorAppointmentService: DoctorAppointmentService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +76,7 @@ export class EditTriageComponent implements OnInit {
               consult_type: t.consult_type || '',
               summary: t.summary || ''
             };
+            this.cdr.detectChanges();
           }
         },
         error: (err) => console.error('Error cargando triage:', err)
